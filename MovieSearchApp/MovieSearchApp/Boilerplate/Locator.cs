@@ -1,4 +1,5 @@
 ﻿using FunctionZero.MvvmZero;
+using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Services.Rest;
 using SimpleInjector;
 using Xamarin.Forms;
@@ -16,7 +17,7 @@ namespace MovieSearchApp.Boilerplate
             _iocc = new Container();
 
             _iocc.Register<IPageServiceZero>(GetPageService, Lifestyle.Singleton);
-
+            _iocc.Register<SearchPage>(Lifestyle.Singleton);
 
         }
         private IPageServiceZero GetPageService()
