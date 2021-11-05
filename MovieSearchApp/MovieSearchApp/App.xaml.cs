@@ -11,7 +11,9 @@ namespace MovieSearchApp
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            var locator = new Locator(this);
+
+            _ = locator.SetFirstPage();
         }
 
         protected override void OnStart()

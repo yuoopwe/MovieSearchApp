@@ -1,13 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             BackgroundColor="white"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <Grid RowDefinitions="Auto, Auto, Auto, *">
+            <Label Grid.Row="0" Text="Movie Search App!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
+            <Button Grid.Row="2" Text="Click me!" Command="{Binding SearchMoviesCommand}"/>
+            <StackLayout Grid.Row="3">
+                <ListView ItemsSource="{Binding Result.Search}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding Title}"/>
+                                    <Label Text="{Binding Year}"/>
+                                    <Image Source="{Binding Poster}"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
