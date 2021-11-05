@@ -1,82 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             BackgroundColor="white"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage">
-
-    <Grid>
-
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="180"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-
-        <SearchBar Placeholder="Enter search term"
-                   x:Name="searchBar1"
-                   SearchButtonPressed="SearchBar_SearchButtonPressed"
-                   Grid.Row="0"
-                   Grid.ColumnSpan="2"/>
-
-
-        <ListView x:Name="listView1"
-                  ItemSelected="listView1_ItemSelected" 
-                  Grid.Row="1"
-                  Grid.ColumnSpan="2"/>
-
-
-
-        <Label Text="--Title--"
-                   x:Name="titleLabel"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"
-                   Grid.Row="2"
-                   Grid.ColumnSpan="2"
-                   FontSize="20"/>
-
-        <Label Text="--Descrip--"
-                   x:Name="descriptionLabel"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"
-                   Grid.Row="3"
-                   Grid.ColumnSpan="2"
-                   FontSize="16"/>
-
-        <Label Text="--Rating--"
-                   x:Name="ratingLabel"
-                   HorizontalTextAlignment="Start"
-                   VerticalTextAlignment="Start"
-                   Grid.Row="4"
-                   Grid.Column="0"
-                   FontSize="16"
-                   Padding="10"
-                       />
-
-        <Label Text="--Director--"
-               x:Name="directorLabel"
-               HorizontalTextAlignment="End"
-               VerticalTextAlignment="End"
-               FontSize="16"
-               Grid.Row="4"
-               Grid.Column="1"
-               Padding="10"
-               />
-
-        <Image x:Name="posterImage"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               Grid.Row="5"
-               Grid.ColumnSpan="2"
-               />
-
-    </Grid>
-
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, Auto, Auto, *">
+            <Label Grid.Row="0" Text="Movie Search App!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
+            <Button Grid.Row="2" Text="Click me!" Command="{Binding SearchMoviesCommand}"/>
+            <StackLayout Grid.Row="3">
+                <ListView ItemsSource="{Binding Result.Search}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding Title}"/>
+                                    <Label Text="{Binding Year}"/>
+                                    <Image Source="{Binding Poster}"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
 </ContentPage>
