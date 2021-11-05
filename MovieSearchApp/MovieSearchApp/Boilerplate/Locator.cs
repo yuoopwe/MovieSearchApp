@@ -1,9 +1,15 @@
-﻿using FunctionZero.MvvmZero;
+﻿
+using FunctionZero.MvvmZero;
+using SimpleInjector;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Mvvm.PageViewModels;
 using MovieSearchApp.Services;
 using MovieSearchApp.Services.Rest;
-using SimpleInjector;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Diagnostics;
 using System.Net.Http;
@@ -91,4 +97,18 @@ namespace MovieSearchApp.Boilerplate
 			Debug.WriteLine(thePage);
 		}
 	}
+        }
+
+        public async Task SetFirstPage()
+        {
+            App.Current.MainPage = new NavigationPage();
+            await _iocc.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { }) ;
+        }
+        private IPageServiceZero GetPageService()
+        {
+            App.Current.MainPage = new NavigationPage();
+            var pageService = new PageServiceZero(() => App.Current.MainPage.Navigation, (theType) => _iocc.GetInstance(theType));
+            return pageService;
+        }
+    }
 }
