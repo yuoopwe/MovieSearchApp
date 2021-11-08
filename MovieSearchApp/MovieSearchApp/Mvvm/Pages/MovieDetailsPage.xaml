@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.MovieDetailsPage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, *, Auto" >
+            <Label Grid.Row="0" Text="Movie Details!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <StackLayout Grid.Row="1">
+                <Label Text="{Binding DetailsResult.Title}"/>
+                <Label Text="{Binding DetailsResult.Year}"/>
+                <Label Text="{Binding DetailsResult.Rated}"/>
+                <Label Text="{Binding DetailsResult.Released}"/>
+                <Label Text="{Binding DetailsResult.Runtime}"/>
+                <Label Text="{Binding DetailsResult.Genre}"/>
+                <Label Text="{Binding DetailsResult.Director}"/>
+                <Label Text="{Binding DetailsResult.Writer}"/>
+                <Label Text="{Binding DetailsResult.Actors}"/>
+                <Label Text="{Binding DetailsResult.Plot}"/>
+                <Label Text="{Binding DetailsResult.Language}"/>
+                <Label Text="{Binding DetailsResult.Country}"/>
+                <Label Text="{Binding DetailsResult.Awards}"/>
+                <StackLayout>
+                    <ListView  ItemsSource="{Binding DetailsResult.Ratings}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout>
+                                        <Label Text="{Binding Source }"/>
+                                        <Label Text="{Binding Value }"/>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
