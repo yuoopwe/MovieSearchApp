@@ -74,10 +74,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task GetMovieDetailsExecute()
         {
-            string movieId = Display.imdbID;
-            MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsAsync(movieId);
-            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
-            DetailsResult = detailsResult;
+            if (Display == null)
+            {
+                await _alertService.DisplayAlertAsync("Message", "Please select a movie before searching for more details", "Ok");
+            }
+            else
+            {
+                var movieId = Display.imdbID;
+                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsAsync(movieId);
+                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
+                DetailsResult = detailsResult;
+            }
+
+            
         }
 
         public async Task<int> GetMoviesExecute()
@@ -115,7 +124,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 pageCounter = currentCounter;
             }
 
-
+            Display = null;
             return pageCounter;
         }
         public async Task<int> GetMoviesExecuteBack()
@@ -140,7 +149,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     Result = result;
                 }
 
-          
+            Display = null;
             return pageCounter;
         }
        // protected override async void OnPropertyChanged([CallerMemberName] string propertyName = null)
