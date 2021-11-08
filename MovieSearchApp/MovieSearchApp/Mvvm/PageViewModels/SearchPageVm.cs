@@ -27,6 +27,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand SearchMoviesCommand { get; }
         public ICommand GetDetailsCommand { get; }
 
+        public MovieCollectionModel result;
         public readonly IAlertService _alertService;
         public readonly OmdbService _omdbService;
         public readonly IPageServiceZero _pageService;
@@ -95,32 +96,51 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             int currentCounter;
             currentCounter = pageCounter;
             pageCounter++;
-            MovieCollectionModel result = await _omdbService.GetMoviesAsync(SearchText.ToString(), pageCounter);
-            if (result.Response == "False")
+            if (SearchText != null)
             {
-               await _alertService.DisplayAlertAsync("Message", "No more results found, please go back a page or re-enter a movie into the search bar", "Ok");
-                pageCounter = currentCounter;
+                result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
+                if (result.Response == "False")
+                {
+                    await _alertService.DisplayAlertAsync("Message", "No more results found, please go back a page or re-enter a movie into the search bar", "Ok");
+                    pageCounter = currentCounter;
+                }
+                else
+                {
+                    Result = result;
+                }
             }
             else
             {
-                Result = result;
+                await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
+                pageCounter = currentCounter;
             }
+
+
             return pageCounter;
         }
         public async Task<int> GetMoviesExecuteBack()
         {
+            int currentCounter = pageCounter;
             pageCounter--;
-            MovieCollectionModel result = await _omdbService.GetMoviesAsync(SearchText.ToString(), pageCounter);
-            //If page counter is < 1 show a message box letting the user know
-            if (pageCounter < 1)
-            {
-                await _alertService.DisplayAlertAsync("Message", "You cannot go back a page from here", "Ok");
-                pageCounter = 1; 
-            }
-            else
-            {
-                Result = result;
-            }
+
+                if (SearchText == null && result == null)
+                {
+                    await _alertService.DisplayAlertAsync("Message", "Please enter a movie", "Ok");
+                    pageCounter = currentCounter;
+
+                }
+                else if (pageCounter < 1)
+                {
+                    await _alertService.DisplayAlertAsync("Message", "You cannot go back a page from here", "Ok");
+                    pageCounter = 1;
+                }
+                else 
+                {
+                    MovieCollectionModel result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
+                    Result = result;
+                }
+
+          
             return pageCounter;
         }
        // protected override async void OnPropertyChanged([CallerMemberName] string propertyName = null)

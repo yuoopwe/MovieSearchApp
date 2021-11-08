@@ -4,9 +4,9 @@
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" >
-            <Label Grid.Row="0" Text="Movie Search App!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <Label Grid.Row="0" Text="Movie Search App" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
             <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
-            <Button Grid.Row="2" Text="Click me!" Command="{Binding SearchMoviesCommand}"/>
+            <Button Grid.Row="2" Text="Search" Command="{Binding SearchMoviesCommand}"/>
             <StackLayout Grid.Row="3">
                 <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.Search}">
                     <ListView.ItemTemplate>
