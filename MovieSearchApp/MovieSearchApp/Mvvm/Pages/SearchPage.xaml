@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage">
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, Auto, Auto, *">
+        <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" >
             <Label Grid.Row="0" Text="Movie Search App!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
             <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
             <Button Grid.Row="2" Text="Click me!" Command="{Binding SearchMoviesCommand}"/>
             <StackLayout Grid.Row="3">
-                <ListView ItemsSource="{Binding Result.Search}">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.Search}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -22,6 +22,10 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
+            <Button Grid.Row="4" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
+            <Button Grid.Row="5" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchMoviesCommandBack}"/>
+            <Label Grid.Row="5" HorizontalOptions="Center" Text="{Binding pageCounter}"/>
+            <Button Grid.Row="5" HorizontalOptions ="EndAndExpand" Text="Go Next!" Command="{Binding SearchMoviesCommandNext} "/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

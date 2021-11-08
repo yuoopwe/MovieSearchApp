@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Diagnostics;
+using MovieSearchApp.Services.Alert_Service;
+using System;
 
 namespace MovieSearchApp.Boilerplate
 {
@@ -42,21 +44,28 @@ namespace MovieSearchApp.Boilerplate
 
 			// Tell the IoC container about our Pages.
 			_IoCC.Register<SearchPage>(Lifestyle.Singleton);
-
+			_IoCC.Register<MovieDetailsPage>(Lifestyle.Singleton);
 
 			// Tell the IoC container about our ViewModels.
 			_IoCC.Register<SearchPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
 
 			// Tell the IoC container about our Services!!!.
 			_IoCC.Register<IRestService>(GetRestService, Lifestyle.Singleton);
 			_IoCC.Register<OmdbService>(GetOmdbService, Lifestyle.Singleton);
+			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 
 
 			// Optionally add more to the IoC conatainer, e.g. loggers, Http comms objects etc. E.g.
 			// IoCC.Register<ILogger, MyLovelyLogger>(Lifestyle.Singleton);
 		}
 
-		private OmdbService GetOmdbService()
+        private IAlertService GetAlertService()
+        {
+			return new AlertService();
+        }
+
+        private OmdbService GetOmdbService()
 		{
 			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.ApiKey);
 		}

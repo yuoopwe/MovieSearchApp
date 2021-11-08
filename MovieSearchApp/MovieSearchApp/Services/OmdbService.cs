@@ -18,9 +18,16 @@ namespace MovieSearchApp.Services
             _apiKey = apiKey;
         }
 
-        public async Task<MovieCollectionModel> GetMoviesAsync(string search)
+        public async Task<MovieCollectionModel> GetMoviesAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}");
+            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}&page={pageCounter}");
+
+            return result.payload;
+        }
+
+        public async Task<MovieDetailsModel> GetMovieDetailsAsync(string id)
+        {
+            var result = await _restService.GetAsync<MovieDetailsModel>($"?apikey={_apiKey}&i={id}");
 
             return result.payload;
         }
