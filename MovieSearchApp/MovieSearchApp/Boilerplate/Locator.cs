@@ -35,8 +35,8 @@ namespace MovieSearchApp.Boilerplate
 					// (If you have a FlyoutPage at the root, the navigationGetter should return the current Detail item)
 					// It also needs to know how to get Page and ViewModel instances so we provide it with a factory
 					// that uses the IoC container. We could easily provide any sort of factory, we don't need to use an IoC container.
-					var pageService = new PageServiceZero(() => App.Current.MainPage.Navigation, (theType) => _IoCC.GetInstance(theType));
-					return pageService;
+					var pageService = new PageServiceZero(() => ((FlyoutPage)App.Current.MainPage).Detail.Navigation, (theType) => _IoCC.GetInstance(theType));
+					return pageService;                   //() => App.Current.MainPage.Navigation   
 				},
 				// One only ever will be created.
 				Lifestyle.Singleton
@@ -45,8 +45,13 @@ namespace MovieSearchApp.Boilerplate
 			// Tell the IoC container about our Pages.
 			_IoCC.Register<SearchPage>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPage>(Lifestyle.Singleton);
+			_IoCC.Register<MyFlyoutPage>(Lifestyle.Singleton);
+			_IoCC.Register<MyFlyoutPageFlyout>(Lifestyle.Singleton);
+
 
 			// Tell the IoC container about our ViewModels.
+			_IoCC.Register<MyFlyoutPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<MyFlyoutPageFlyoutVm>(Lifestyle.Singleton);
 			_IoCC.Register<SearchPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
 
@@ -58,6 +63,21 @@ namespace MovieSearchApp.Boilerplate
 
 			// Optionally add more to the IoC conatainer, e.g. loggers, Http comms objects etc. E.g.
 			// IoCC.Register<ILogger, MyLovelyLogger>(Lifestyle.Singleton);
+		}
+
+        private INavigation GetNavigationPage()
+		{
+			// => App.Current.MainPage.Navigation
+			var flyout = (FlyoutPage)App.Current.MainPage.Navigation;
+
+
+			var currentPage = flyout;
+
+			var navPage = (INavigation)currentPage;
+
+			return navPage;
+
+
 		}
 
         private IAlertService GetAlertService()
@@ -87,9 +107,27 @@ namespace MovieSearchApp.Boilerplate
 			// and you will need to modify the 'navigationGetter' provided to the PageServiceZero instance to 
 			// something like this:
 			// () => ((FlyoutPage)App.Current.MainPage).Detail.Navigation
-			App.Current.MainPage = new NavigationPage();
+
+		
+			var pageService = _IoCC.GetInstance<IPageServiceZero>();
+
+			var flyoutPageFlyout = pageService.MakePage<MyFlyoutPageFlyout, MyFlyoutPageFlyoutVm>((vm) => { });
+
+			var flyout = new FlyoutPage();
+
+			flyout.Flyout = flyoutPageFlyout;
+
+
+			//temp code
+			var navPage = new NavigationPage();
+			flyout.Detail = navPage;
+			App.Current.MainPage = flyout;
+
+
+			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
+
 			// Ask the PageService to assemble and present our HomePage ...
-			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => {/* Optionally interact with the vm, e.g. to inject seed-data */ });
+			//await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<MyFlyoutPage,MyFlyoutPageVm>((vm)=> { });
 		}
 
 		/// <summary>

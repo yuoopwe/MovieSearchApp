@@ -1,7 +1,9 @@
 ﻿using MovieSearchApp.Boilerplate;
 using System;
 using Xamarin.Forms;
+using MovieSearchApp.Services;
 using Xamarin.Forms.Xaml;
+
 
 namespace MovieSearchApp
 {
