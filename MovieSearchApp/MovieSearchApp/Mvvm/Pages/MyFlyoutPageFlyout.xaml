@@ -32,10 +32,11 @@
         <DataTemplate>
           <ViewCell>
             <StackLayout Padding="15,10" HorizontalOptions="FillAndExpand">
-              <Label VerticalOptions="FillAndExpand" 
-                    VerticalTextAlignment="Center" 
-                    Text="{Binding Title}" 
-                    FontSize="24"/>
+                            <Button VerticalOptions="FillAndExpand" 
+                    Text="{Binding Title}"
+                    Command="{Binding Command}"
+                    FontSize="24"
+                    ImageSource="/Assets/search.png"/>
             </StackLayout>
           </ViewCell>
         </DataTemplate>
