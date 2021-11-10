@@ -1,0 +1,6 @@
+62 Chinese
+67 Korean
+35 English
+35 Spanish
+35 German
+474 Japanese
