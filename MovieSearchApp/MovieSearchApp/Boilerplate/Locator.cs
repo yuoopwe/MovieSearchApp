@@ -45,12 +45,10 @@ namespace MovieSearchApp.Boilerplate
 			// Tell the IoC container about our Pages.
 			_IoCC.Register<SearchPage>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPage>(Lifestyle.Singleton);
-			_IoCC.Register<MyFlyoutPage>(Lifestyle.Singleton);
 			_IoCC.Register<MyFlyoutPageFlyout>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our ViewModels.
-			_IoCC.Register<MyFlyoutPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<MyFlyoutPageFlyoutVm>(Lifestyle.Singleton);
 			_IoCC.Register<SearchPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
@@ -118,7 +116,7 @@ namespace MovieSearchApp.Boilerplate
 			flyout.Flyout = flyoutPageFlyout;
 
 
-			//temp code
+		
 			var navPage = new NavigationPage();
 			flyout.Detail = navPage;
 			App.Current.MainPage = flyout;
@@ -126,8 +124,6 @@ namespace MovieSearchApp.Boilerplate
 
 			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
 
-			// Ask the PageService to assemble and present our HomePage ...
-			//await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<MyFlyoutPage,MyFlyoutPageVm>((vm)=> { });
 		}
 
 		/// <summary>

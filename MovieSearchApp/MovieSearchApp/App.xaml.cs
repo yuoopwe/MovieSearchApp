@@ -14,7 +14,6 @@ namespace MovieSearchApp
             InitializeComponent();
 
             var locator = new Locator(this);
-
             _ = locator.SetFirstPage();
         }
 

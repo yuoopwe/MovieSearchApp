@@ -11,6 +11,38 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\profile.png" />
+    <None Remove="Assets\search.png" />
+    <None Remove="Assets\Settings.png" />
+    <None Remove="Images\Journal.png" />
+    <None Remove="Images\menu144.png" />
+    <None Remove="Images\menu96.png" />
+    <None Remove="Images\popular.png" />
+    <None Remove="Images\profile1.png" />
+    <None Remove="Images\search1.png" />
+    <None Remove="Images\Settings1.png" />
+    <None Remove="Images\signout.png" />
+    <None Remove="Images\tgBtn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\Journal.png" />
+    <EmbeddedResource Include="Images\menu144.png" />
+    <EmbeddedResource Include="Images\menu96.png" />
+    <EmbeddedResource Include="Images\popular.png" />
+    <EmbeddedResource Include="Images\profile1.png" />
+    <EmbeddedResource Include="Images\search1.png" />
+    <EmbeddedResource Include="Images\Settings1.png" />
+    <EmbeddedResource Include="Images\signout.png" />
+    <EmbeddedResource Include="Images\tgBtn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\profile.png" />
+    <Resource Include="Assets\Settings.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FunctionZero.MvvmZero" Version="2.2.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SimpleInjector" Version="5.3.2" />
@@ -23,6 +55,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\search.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Mvvm\Pages\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
@@ -30,9 +66,6 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Mvvm\Pages\MovieDetailsPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Mvvm\Pages\MyFlyoutPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Mvvm\Pages\MyFlyoutPageDetail.xaml">

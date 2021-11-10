@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Forms;
 
-namespace MovieSearchApp.Mvvm.Pages
+namespace MovieSearchApp.Models
 {
-    public class MyFlyoutPageFlyoutMenuItem
+    public class FlyoutMenuModel
     {
-        public MyFlyoutPageFlyoutMenuItem()
+        public FlyoutMenuModel()
         {
         }
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public string Icon { get; set; }
+        public ImageSource Icon { get; set; }
         public ICommand Command { get; set; }
+    
     }
 }
