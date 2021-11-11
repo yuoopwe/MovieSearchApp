@@ -1,16 +1,19 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models.OMDb;
+using MovieSearchApp.Models.SearchPage;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
+using System.Linq;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -22,9 +25,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _pagecounter, value);
         }
         public MovieCollectionModel _result;
-        public ICommand SearchMoviesCommandNext { get; }
-        public ICommand SearchMoviesCommandBack { get; }
-        public ICommand SearchMoviesCommand { get; }
+        public ICommand SearchNextPageCommand { get; }
+        public ICommand SearchPreviousPageCommand { get; }
+        public ICommand SearchCommand { get; }
         public ICommand GetDetailsCommand { get; }
 
         public MovieCollectionModel result;
@@ -35,17 +38,43 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public MovieDetailsModel _detailsresult;
         public MovieModel _display;
         public int _pagecounter;
+        private PickerModel _selectedFilter;
+        private List<MovieModel> _searchResult;
+        private string currentSearch { get; set; }
+        private PickerModel currentlySelectedFilter { get; set; }
+
+        public IList<PickerModel> FilterList { get; set; }
+        public List<MovieModel> SearchResult
+        {
+            get => _searchResult;
+            set => SetProperty(ref _searchResult, value);
+        }
+
+        public PickerModel SelectedFilter
+        {
+            get => _selectedFilter;
+            set
+            {
+                if (_selectedFilter != value)
+                {
+                    _selectedFilter = value;
+                    this.OnPropertyChanged();
+                };
+            }
+        }
 
         public MovieDetailsModel DetailsResult
         {
             get => _detailsresult;
             set => SetProperty(ref _detailsresult, value);
         }
+
         public MovieCollectionModel Result
         {
             get => _result;
             set => SetProperty(ref _result, value);
         }
+
         public MovieModel Display
         {
             get => _display;
@@ -64,10 +93,22 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             _alertService = alertService;
 
+            FilterList = new List<PickerModel>(new[]
+            {
+                    new PickerModel {Filter = "Search All" },
+                    new PickerModel {Filter = "Search Movies"},
+                    new PickerModel {Filter = "Search TV Show"},
+                    new PickerModel {Filter = "Search Game"}
 
-            SearchMoviesCommandNext = new CommandBuilder().SetExecuteAsync(GetMoviesExecuteNext).Build();
-            SearchMoviesCommandBack = new CommandBuilder().SetExecuteAsync(GetMoviesExecuteBack).Build();
-            SearchMoviesCommand = new CommandBuilder().SetExecuteAsync(GetMoviesExecute).Build();
+
+                });
+            currentSearch = SearchText;
+            SelectedFilter = FilterList[0];
+            currentlySelectedFilter = SelectedFilter;
+
+            SearchNextPageCommand = new CommandBuilder().SetExecuteAsync(GetNextPageExecute).Build();
+            SearchPreviousPageCommand = new CommandBuilder().SetExecuteAsync(GetPreviousPageExecute).Build();
+            SearchCommand = new CommandBuilder().SetExecuteAsync(SearchCommandExecute).Build();
             GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetMovieDetailsExecute).Build();
 
         }
@@ -86,83 +127,182 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 DetailsResult = detailsResult;
             }
 
-            
+
         }
 
-        public async Task<int> GetMoviesExecute()
+        public async Task<int> SearchCommandExecute()
         {
             pageCounter = 1;
-            MovieCollectionModel result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
+            List<MovieModel> searchResult = new List<MovieModel>();
+            switch (SelectedFilter.Filter)
+            {
+                case "Search TV Shows":
+                    result = await _omdbService.GetSeriesAsync(SearchText, pageCounter);
+                    Result = result;
+                    break;
+
+                case "Search Movies":
+                    result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
+                    Result = result;
+                    break;
+
+                case "Search Game":
+                    result = await _omdbService.GetGamesAsync(SearchText, pageCounter);
+                    Result = result;
+                    break;
+
+                default:
+                    result = await _omdbService.GetAllAsync(SearchText, pageCounter);
+                    Result = result;
+                    break;
+            }
             if (result.Response == "False")
             {
-                await _alertService.DisplayAlertAsync("Message", "No movie found, please try again", "Ok");
+                await _alertService.DisplayAlertAsync("Message", "No Result Found, Please Try Again", "Ok");
             }
-            Result = result;
+            
+            currentSearch = SearchText;
+            currentlySelectedFilter = SelectedFilter;
             return pageCounter;
+
         }
-        public async Task<int> GetMoviesExecuteNext()
+
+
+        public async Task<int> GetNextPageExecute()
         {
             int currentCounter;
+            List<MovieModel> searchResult = new List<MovieModel>();
             currentCounter = pageCounter;
             pageCounter++;
-            if (SearchText != null)
-            {
-                result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
-                if (result.Response == "False")
+
+                if (currentlySelectedFilter != SelectedFilter)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "No more results found, please go back a page or re-enter a movie into the search bar", "Ok");
-                    pageCounter = currentCounter;
+                    await _alertService.DisplayAlertAsync("Message", "You must start a new search with the required filter selected before changing page", "Ok");
+                    SelectedFilter = currentlySelectedFilter;
+                    pageCounter--;
                 }
                 else
                 {
-                    Result = result;
-                }
-            }
-            else
-            {
-                await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
-                pageCounter = currentCounter;
-            }
+                    if (SearchText != null)
+                    {
 
-            Display = null;
-            return pageCounter;
+                        switch (SelectedFilter.Filter)
+                        {
+                            case "Search TV Shows":
+                                result = await _omdbService.GetSeriesAsync(currentSearch, pageCounter);
+                                Result = result;
+                                break;
+
+                            case "Search Movies":
+                                result = await _omdbService.GetMoviesAsync(currentSearch, pageCounter);
+                                Result = result;
+                                break;
+
+                            case "Search Game":
+                                result = await _omdbService.GetGamesAsync(currentSearch, pageCounter);
+                                Result = result;
+                                break;
+
+                            default:
+                                result = await _omdbService.GetAllAsync(currentSearch, pageCounter);
+                                Result = result;
+                                break;
+                        }
+
+                        if (result.Response == "False")
+                        {
+                            await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+                            pageCounter = currentCounter;
+                        }
+                    }
+                    else
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
+                        pageCounter = currentCounter;
+                    }
+
+                }
+
+
+                Display = null;
+                return pageCounter;
         }
-        public async Task<int> GetMoviesExecuteBack()
+        
+        public async Task<int> GetPreviousPageExecute()
         {
             int currentCounter = pageCounter;
             pageCounter--;
-
+            if (currentlySelectedFilter != SelectedFilter)
+            {
+                await _alertService.DisplayAlertAsync("Message", "You must start a new search with the required filter selected before changing page", "Ok");
+                pageCounter++;
+                SelectedFilter = currentlySelectedFilter;
+            }
+            else
+            {
                 if (SearchText == null && result == null)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "Please enter a movie", "Ok");
+                    await _alertService.DisplayAlertAsync("Message", "Please Enter A Search", "Ok");
                     pageCounter = currentCounter;
 
                 }
                 else if (pageCounter < 1)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "You cannot go back a page from here", "Ok");
+                    await _alertService.DisplayAlertAsync("Message", "You Cannot Go Back A Page From Here", "Ok");
                     pageCounter = 1;
                 }
-                else 
+                else
                 {
-                    MovieCollectionModel result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
-                    Result = result;
+
+                    switch (SelectedFilter.Filter)
+                    {
+                        case "Search TV Shows":
+                            result = await _omdbService.GetSeriesAsync(currentSearch, pageCounter);
+                            Result = result;
+                            break;
+
+                        case "Search Movies":
+                            result = await _omdbService.GetMoviesAsync(currentSearch, pageCounter);
+                            Result = result;
+                            break;
+
+                        case "Search Game":
+                            result = await _omdbService.GetGamesAsync(currentSearch, pageCounter);
+                            Result = result;
+                            break;
+
+                        default:
+                            result = await _omdbService.GetAllAsync(currentSearch, pageCounter);
+                            Result = result;
+                            break;
+                    }
+
+                    if (result.Response == "False")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+                        pageCounter = currentCounter;
+                    }
                 }
+            }
+
 
             Display = null;
             return pageCounter;
         }
-       // protected override async void OnPropertyChanged([CallerMemberName] string propertyName = null)
-     // {
-     //     base.OnPropertyChanged(propertyName);
-     ///     if (propertyName == nameof(Display))
-     //    {
-     //         if (Display != null)
-     //        {
-     //           await GetMovieDetailsExecute();
-     //            Display = null;
-     //        }
-     //    }
-     // }
+
+
+        // protected override async void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        // {
+        //     base.OnPropertyChanged(propertyName);
+        ///     if (propertyName == nameof(Display))
+        //    {
+        //         if (Display != null)
+        //        {
+        //           await GetMovieDetailsExecute();
+        //            Display = null;
+        //        }
+        //    }
+        // }
     }
 }
+
