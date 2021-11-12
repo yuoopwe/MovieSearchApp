@@ -97,7 +97,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                     new PickerModel {Filter = "Search All" },
                     new PickerModel {Filter = "Search Movies"},
-                    new PickerModel {Filter = "Search TV Show"},
+                    new PickerModel {Filter = "Search TV Shows"},
                     new PickerModel {Filter = "Search Game"}
 
 
