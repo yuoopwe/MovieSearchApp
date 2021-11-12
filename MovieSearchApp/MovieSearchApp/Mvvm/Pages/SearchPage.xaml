@@ -28,7 +28,10 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <Button Grid.Row="4" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
+            <Grid ColumnDefinitions="*,*" Grid.Row="4">
+                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
+                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}"/>
+            </Grid>
             <Button Grid.Row="5" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}"/>
             <Label Grid.Row="5" HorizontalOptions="Center" Text="{Binding pageCounter}"/>
             <Button Grid.Row="5" HorizontalOptions ="EndAndExpand" Text="Go Next!" Command="{Binding SearchNextPageCommand} "/>

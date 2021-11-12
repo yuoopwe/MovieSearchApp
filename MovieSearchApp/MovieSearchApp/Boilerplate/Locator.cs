@@ -46,24 +46,29 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<SearchPage>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPage>(Lifestyle.Singleton);
 			_IoCC.Register<MyFlyoutPageFlyout>(Lifestyle.Singleton);
+			_IoCC.Register<RecommendationPage>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our ViewModels.
 			_IoCC.Register<MyFlyoutPageFlyoutVm>(Lifestyle.Singleton);
 			_IoCC.Register<SearchPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
+			_IoCC.Register<RecommendationPageVm>(Lifestyle.Singleton);
+
 
 			// Tell the IoC container about our Services!!!.
 			_IoCC.Register<IRestService>(GetRestService, Lifestyle.Singleton);
 			_IoCC.Register<OmdbService>(GetOmdbService, Lifestyle.Singleton);
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
+			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
+
 
 
 			// Optionally add more to the IoC conatainer, e.g. loggers, Http comms objects etc. E.g.
 			// IoCC.Register<ILogger, MyLovelyLogger>(Lifestyle.Singleton);
 		}
 
-        private INavigation GetNavigationPage()
+		private INavigation GetNavigationPage()
 		{
 			// => App.Current.MainPage.Navigation
 			var flyout = (FlyoutPage)App.Current.MainPage.Navigation;
@@ -85,14 +90,20 @@ namespace MovieSearchApp.Boilerplate
 
         private OmdbService GetOmdbService()
 		{
-			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.ApiKey);
+			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbApiKey, ApiConstants.OmdbBaseApiUrl);
 		}
+		private TastediveService GetTastediveService()
+		{
+			return new TastediveService(_IoCC.GetInstance<IRestService>(), ApiConstants.TastediveApiKey, ApiConstants.TastediveBaseApiUrl);
+		}
+
 
 		private RestService GetRestService()
 		{
 			var httpClient = new HttpClient();
-			return new RestService(httpClient, ApiConstants.BaseApiUrl);
+			return new RestService(httpClient);
 		}
+
 
 
 		/// <summary>
