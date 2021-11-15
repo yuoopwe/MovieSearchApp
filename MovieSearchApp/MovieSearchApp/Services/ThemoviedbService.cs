@@ -21,12 +21,22 @@ namespace MovieSearchApp.Services
         }
 
 
-        public async Task<ThemovieDbModel> DiscoverMovies(string search)
+        public async Task<ThemovieDbModel> DiscoverMovies(string search,int pageCounter)
         {
-            var result = await _restService.GetAsync<ThemovieDbModel>($"{_baseUrl}/discover/movie?api_key={_apiKey}&primary_release_year=2010&sort_by=vote_average.desc");
+            var result = await _restService.GetAsync<ThemovieDbModel>($"{_baseUrl}discover/movie?api_key={_apiKey}&primary_release_year={search}&sort_by=popularity.desc&region=GB&page={pageCounter}");
 
             return result.payload;
         }
+
+        public async Task<ThemovieDbModel> DiscoverMoviesGenre(string search, int pageCounter, int genreId)
+        {
+            var result = await _restService.GetAsync<ThemovieDbModel>($"{_baseUrl}discover/movie?api_key={_apiKey}&primary_release_year={search}&sort_by=popularity.desc&region=GB&page={pageCounter}&with_genres&with_genres={genreId}");
+
+            return result.payload;
+        }
+
+
     }
 }
+
 

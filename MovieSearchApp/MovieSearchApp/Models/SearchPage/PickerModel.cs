@@ -6,6 +6,7 @@ namespace MovieSearchApp.Models.SearchPage
 {
     class PickerModel
     {
+        public int id { get; set; }
         public string Filter { get; set; }
         
     }

@@ -47,6 +47,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<MovieDetailsPage>(Lifestyle.Singleton);
 			_IoCC.Register<MyFlyoutPageFlyout>(Lifestyle.Singleton);
 			_IoCC.Register<RecommendationPage>(Lifestyle.Singleton);
+			_IoCC.Register<PopularPage>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our ViewModels.
@@ -54,6 +55,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<SearchPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
 			_IoCC.Register<RecommendationPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<PopularPageVm>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our Services!!!.
