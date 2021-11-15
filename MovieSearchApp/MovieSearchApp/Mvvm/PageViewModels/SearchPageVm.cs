@@ -133,7 +133,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 var movieId = Display.imdbID;
-                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsAsync(movieId);
+                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
                 await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
                 DetailsResult = detailsResult;
             }

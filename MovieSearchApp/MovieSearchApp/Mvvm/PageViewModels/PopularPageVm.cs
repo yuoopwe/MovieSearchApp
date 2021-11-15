@@ -216,7 +216,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private async Task GetMovieDetailsExecute()
         {
             TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(Display.id.ToString());
-            MovieDetailsModel result = await _omdbService.GetMovieDetailsAsync(detailResult.imdb_id);
+            MovieDetailsModel result = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
             DetailsResult = result;
             await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(DetailsResult));
 
@@ -232,8 +232,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             pageCounter++;
             await MovieSearch(genreListFormatted);
 
-
-
         }
 
         private async Task GetPopularMoviesPreviousPageExecute()
@@ -245,11 +243,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private async Task GetPopularMoviesExecute()
         {
             pageCounter = 1;
-            
 
             await MovieSearch(genreListFormatted);
-
-
 
         }
 
