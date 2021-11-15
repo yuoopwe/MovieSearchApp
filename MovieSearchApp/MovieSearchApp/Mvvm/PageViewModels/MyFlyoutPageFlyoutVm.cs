@@ -36,6 +36,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
         }
         public ICommand SearchPageCommand { get; }
+        public ICommand PopularPageCommand { get; }
+
         public ObservableCollection<FlyoutMenuModel> MenuItems { get; set; }
         public MyFlyoutPageFlyoutVm(OmdbService omdbService, IPageServiceZero pageService, IAlertService alertService)
         {
@@ -43,16 +45,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             _alertService = alertService;
 
+            PopularPageCommand = new CommandBuilder().SetExecuteAsync(PopularPageExecute).Build();
             SearchPageCommand = new CommandBuilder().SetExecuteAsync(SearchPageExecute).Build();
             tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
             MenuItems = new ObservableCollection<FlyoutMenuModel>(new[]
             {
                     new FlyoutMenuModel { Id = 0, Title = "Search" , Command=SearchPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.search1.png")},
-                    new FlyoutMenuModel { Id = 1, Title = "Popular Movies", Icon=ImageSource.FromResource("MovieSearchApp.Images.popular.png") },
+                    new FlyoutMenuModel { Id = 1, Title = "Popular Movies", Command=PopularPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.popular.png") },
                     new FlyoutMenuModel { Id = 2, Title = "Journal",Icon=ImageSource.FromResource("MovieSearchApp.Images.Journal.png") },
                     new FlyoutMenuModel { Id = 3, Title = "Profile" ,Icon=ImageSource.FromResource("MovieSearchApp.Images.profile1.png")},
                     new FlyoutMenuModel { Id = 4, Title = "Settings",Icon=ImageSource.FromResource("MovieSearchApp.Images.Settings1.png") },
-                    new FlyoutMenuModel { Id = 5, Title = "Signout",Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
+                    new FlyoutMenuModel { Id = 5, Title = "Sign out",Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
 
                 });
 
@@ -61,6 +64,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task SearchPageExecute()
         {
             await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => { });
+        }
+        public async Task PopularPageExecute()
+        {
+            await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) => { });
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)

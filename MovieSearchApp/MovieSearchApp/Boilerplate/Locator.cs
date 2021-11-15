@@ -61,6 +61,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<OmdbService>(GetOmdbService, Lifestyle.Singleton);
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
+			_IoCC.Register<ThemoviedbService>(GetTheMovieDbService, Lifestyle.Singleton);
 
 
 
@@ -91,6 +92,10 @@ namespace MovieSearchApp.Boilerplate
         private OmdbService GetOmdbService()
 		{
 			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbApiKey, ApiConstants.OmdbBaseApiUrl);
+		}
+		private ThemoviedbService GetTheMovieDbService()
+		{
+			return new ThemoviedbService(_IoCC.GetInstance<IRestService>(), ApiConstants.TheMovieDbApiKey, ApiConstants.TheMovieDbBaseApiUrl);
 		}
 		private TastediveService GetTastediveService()
 		{
