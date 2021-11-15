@@ -47,6 +47,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private AgeRatingModel _selectedAgeRating;
         private LanguageModel _selectedLanguage;
         private TheMovieDbListResultModel _display;
+        private IList<CheckboxModel> _checkboxList;
+
         private string genreListFormatted { get; set; }
         public List<string> genresList { get; set; }
         public string GenreCheckboxText
@@ -62,7 +64,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand GetDetailsCommand { get; }
         public ICommand GetRecommendationsCommand { get; }
 
-        public IList<CheckboxModel> CheckboxList { get; set; }
+        public IList<CheckboxModel> CheckboxList
+        {
+            get => _checkboxList;
+            set => SetProperty(ref _checkboxList, value);
+        }
         public IList<AgeRatingModel> AgeRatingList { get; set; }
         public IList<LanguageModel> LanguageList { get; set; }
 
@@ -142,6 +148,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 new LanguageModel {LanguageName = "English", LanguageCode = "en"},
                 new LanguageModel {LanguageName = "Japanese", LanguageCode = "ja"},
+                new LanguageModel {LanguageName = "Chinese", LanguageCode = "zh"},
+
 
 
 
@@ -158,7 +166,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             });
             CheckboxList = new List<CheckboxModel>(new[]
             {
-                    new CheckboxModel {Filter = "All", IsChecked = false },
                     new CheckboxModel {id = 28, Filter = "Action", IsChecked = false},
                     new CheckboxModel {id = 12, Filter = "Adventure", IsChecked = false},
                     new CheckboxModel {id = 16, Filter = "Animation", IsChecked = false},
@@ -198,27 +205,42 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         private async Task GetRecommendationsExecute()
         {
-            RecommendationModel recommendationResult;
-            string recommendationSearch = Display.title;
-            for (recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
+            if (Display == null)
             {
-                if (recommendationSearch == "")
+                await _alertService.DisplayAlertAsync("Message", "Please Select A Movie First", "Ok");
+            }
+            else
+            {
+                RecommendationModel recommendationResult;
+                string recommendationSearch = Display.title;
+                for (recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
                 {
-                    await _alertService.DisplayAlertAsync("Message", "No Recommendations Found", "Ok");
-                    break;
+                    if (recommendationSearch == "")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No Recommendations Found", "Ok");
+                        break;
+                    }
+                    recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch);
                 }
-                recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch);
+                await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
             }
 
-            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
+
         }
 
         private async Task GetMovieDetailsExecute()
         {
-            TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(Display.id.ToString());
-            MovieDetailsModel result = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
-            DetailsResult = result;
-            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(DetailsResult));
+            if (Display == null)
+            {
+                await _alertService.DisplayAlertAsync("Message", "Please Select A Movie First", "Ok");
+            }else
+            {
+                TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(Display.id.ToString());
+                MovieDetailsModel result = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
+                DetailsResult = result;
+                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(DetailsResult));
+            }
+
 
         }
 
@@ -229,22 +251,61 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         private async Task GetPopularMoviesNextPageExecute()
         {
-            pageCounter++;
-            await MovieSearch(genreListFormatted);
+            if (pageCounter == 0)
+            {
+                await _alertService.DisplayAlertAsync("Message", "Please Search A Movie First", "Ok");
+            }
+            else
+            {
+                pageCounter++;
+                await MovieSearch(genreListFormatted);
+                if (Result.results.Count == 0)
+                {
+                    await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+                    pageCounter--;
+
+                }
+            }
+            
 
         }
 
         private async Task GetPopularMoviesPreviousPageExecute()
         {
             pageCounter--;
-            await MovieSearch(genreListFormatted);
+            if (pageCounter < 1)
+            {
+                await _alertService.DisplayAlertAsync("Message", "You cannot go back from here", "Ok");
+                pageCounter++;
+            }
+            else
+            {
+                await MovieSearch(genreListFormatted);
+            }
+
+           
         }
 
         private async Task GetPopularMoviesExecute()
         {
             pageCounter = 1;
+            if (LanguageVisible == true && SelectedLanguage == null)
+            {
+                await _alertService.DisplayAlertAsync("Message", "Please Select A Language Or Disable The Filter", "Ok");
+            }else if (AgeRatingVisible == true && SelectedAgeRating == null)
+            {
+                await _alertService.DisplayAlertAsync("Message", "Please Select An AgeRating Or Disable The Filter", "Ok");
 
-            await MovieSearch(genreListFormatted);
+            }
+            else 
+            { 
+                await MovieSearch(genreListFormatted); 
+            }
+            if (Result.results.Count == 0)
+            {
+                await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+
+            }
 
         }
 
@@ -306,7 +367,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public string Apply(IList<CheckboxModel> checkboxList)
         {
-           
+
+            var genreListJoined = "";
+            genreListFormatted = "";
+            genresList.Clear();
             genresList.Add("");
             foreach (var genre in CheckboxList)
             {
@@ -315,7 +379,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     genresList.Add($"{genre.id},");
                 }
             }
-            var genreListJoined = string.Join("", genresList);
+            genreListJoined = string.Join("", genresList);
             genreListFormatted = genreListJoined == "" ? genreListJoined : genreListJoined.Remove(genreListJoined.Length - 1);
             var sb = new StringBuilder();
             CheckboxList = checkboxList;
@@ -326,7 +390,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     sb.Append($" {genre.Filter},");
                 }
             }
-            GenreCheckboxText = sb.ToString() == "" ? GenreCheckboxText = "Please Enter A Genre:" : sb.ToString();
+            GenreCheckboxText = sb.ToString() == "" ? GenreCheckboxText = "Genre: All " : sb.ToString();
             GenreCheckboxText = GenreCheckboxText.Remove(GenreCheckboxText.Length - 1); 
             return genreListFormatted;
         }

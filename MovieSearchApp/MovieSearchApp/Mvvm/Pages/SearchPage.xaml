@@ -21,6 +21,7 @@
                                 <StackLayout>
                                     <Label Text="{Binding Title}"/>
                                     <Label Text="{Binding Year}"/>
+                                    <Label Text="{Binding Type}"/>
                                     <Image Source="{Binding Poster}"/>
                                 </StackLayout>
                             </ViewCell>

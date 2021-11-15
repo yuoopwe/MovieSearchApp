@@ -120,7 +120,25 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task GetRecommendationsExecute()
         {
-            RecommendationModel recommendationResult = await _tastediveService.GetRecommendations(System.Web.HttpUtility.UrlPathEncode(Display.Title));
+            string type;
+            switch (Display.Type)
+            {
+                case "series":
+                    type = "show:";
+                        break;
+                case "movie":
+                    type = "movie:";
+                        break;
+                case "game":
+                    type = "game:";
+                      break;
+
+                default:
+                    type = "";
+                    break;
+
+            }
+            RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(Display.Title), type );
             RecommendationResult = recommendationResult;
             await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
         }

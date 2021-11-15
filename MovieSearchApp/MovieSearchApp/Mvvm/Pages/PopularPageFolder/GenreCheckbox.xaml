@@ -17,7 +17,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Command="{Binding DoneButtonCommand}" HorizontalOptions="Center" Text="Done"/>
+            <Button Command="{Binding DoneButtonCommand}" HorizontalOptions="Center" Text="Apply"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
