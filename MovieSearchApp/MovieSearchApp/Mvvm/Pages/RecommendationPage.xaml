@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.RecommendationPage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, *, Auto" >
+            <Label Grid.Row="0" Text="Movie Recommendations!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <StackLayout Grid.Row="1">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding RecommendationResult.Similar.Results}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding Name}"/>
+                                    <Label Text="{Binding Type}"/>
+                                    <WebView Source="{Binding yUrl}"
+                                             IsVisible="true"
+                                             WidthRequest="500"
+                                             HeightRequest="500"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+            <Button Grid.Row="2" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

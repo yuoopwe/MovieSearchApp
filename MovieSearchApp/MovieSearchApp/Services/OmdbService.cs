@@ -11,42 +11,57 @@ namespace MovieSearchApp.Services
     {
         private readonly IRestService _restService;
         private readonly string _apiKey;
+        private readonly string _baseUrl;
 
-        public OmdbService(IRestService restService, string apiKey)
+        public OmdbService(IRestService restService, string apiKey, string baseUrl)
         {
             _restService = restService;
             _apiKey = apiKey;
+            _baseUrl = baseUrl;
         }
 
         public async Task<MovieCollectionModel> GetAllAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}&page={pageCounter}");
+            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}");
 
             return result.payload;
         }
 
         public async Task<MovieCollectionModel> GetSeriesAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}&page={pageCounter}&type=series");
+            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}&type=series");
 
             return result.payload;
         }
         public async Task<MovieCollectionModel> GetMoviesAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}&page={pageCounter}&type=movie");
+            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}&type=movie");
 
             return result.payload;
         }
         public async Task<MovieCollectionModel> GetGamesAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"?apikey={_apiKey}&s={search}&page={pageCounter}&type=game");
+            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}&type=game");
 
             return result.payload;
         }
 
-        public async Task<MovieDetailsModel> GetMovieDetailsAsync(string id)
+        public async Task<MovieDetailsModel> GetMovieDetailsWithIdAsync(string id)
         {
-            var result = await _restService.GetAsync<MovieDetailsModel>($"?apikey={_apiKey}&i={id}");
+            var result = await _restService.GetAsync<MovieDetailsModel>($"{_baseUrl}?apikey={_apiKey}&i={id}");
+
+            return result.payload;
+        }
+
+        public async Task<MovieDetailsModel> GetMovieDetailsWithTitleAndYearAsync(string title, string year)
+        {
+            var result = await _restService.GetAsync<MovieDetailsModel>($"{_baseUrl}?apikey={_apiKey}&t={title}&y={year}");
+
+            return result.payload;
+        }
+        public async Task<MovieDetailsModel> GetMovieDetailsWithTitleAsync(string title)
+        {
+            var result = await _restService.GetAsync<MovieDetailsModel>($"{_baseUrl}?apikey={_apiKey}&t={title}");
 
             return result.payload;
         }

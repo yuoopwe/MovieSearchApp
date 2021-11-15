@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using System.Linq;
+using MovieSearchApp.Models.Tastedive;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -29,9 +30,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand SearchPreviousPageCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand GetDetailsCommand { get; }
+        public ICommand GetRecommendationsCommand { get; }
 
         public MovieCollectionModel result;
         public readonly IAlertService _alertService;
+        public readonly TastediveService _tastediveService;
         public readonly OmdbService _omdbService;
         public readonly IPageServiceZero _pageService;
         public string _searchText;
@@ -63,6 +66,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
         }
 
+        public RecommendationModel RecommendationResult;
         public MovieDetailsModel DetailsResult
         {
             get => _detailsresult;
@@ -87,8 +91,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _searchText, value);
         }
 
-        public SearchPageVm(OmdbService omdbService, IPageServiceZero pageService, IAlertService alertService)
+        public SearchPageVm(OmdbService omdbService, TastediveService tastediveService, IPageServiceZero pageService, IAlertService alertService)
         {
+            _tastediveService = tastediveService;
             _omdbService = omdbService;
             _pageService = pageService;
             _alertService = alertService;
@@ -100,12 +105,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new PickerModel {Filter = "Search TV Shows"},
                     new PickerModel {Filter = "Search Game"}
 
-
                 });
             currentSearch = SearchText;
             SelectedFilter = FilterList[0];
             currentlySelectedFilter = SelectedFilter;
 
+            GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
             SearchNextPageCommand = new CommandBuilder().SetExecuteAsync(GetNextPageExecute).Build();
             SearchPreviousPageCommand = new CommandBuilder().SetExecuteAsync(GetPreviousPageExecute).Build();
             SearchCommand = new CommandBuilder().SetExecuteAsync(SearchCommandExecute).Build();
@@ -113,6 +118,30 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
+        public async Task GetRecommendationsExecute()
+        {
+            string type;
+            switch (Display.Type)
+            {
+                case "series":
+                    type = "show:";
+                        break;
+                case "movie":
+                    type = "movie:";
+                        break;
+                case "game":
+                    type = "game:";
+                      break;
+
+                default:
+                    type = "";
+                    break;
+
+            }
+            RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(Display.Title), type );
+            RecommendationResult = recommendationResult;
+            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
+        }
         public async Task GetMovieDetailsExecute()
         {
             if (Display == null)
@@ -122,7 +151,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 var movieId = Display.imdbID;
-                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsAsync(movieId);
+                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
                 await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
                 DetailsResult = detailsResult;
             }
