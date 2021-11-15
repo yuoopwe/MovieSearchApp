@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MovieSearchApp.Mvvm.Pages
+namespace MovieSearchApp.Mvvm.Pages.PopularPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PopularPage : ContentPage

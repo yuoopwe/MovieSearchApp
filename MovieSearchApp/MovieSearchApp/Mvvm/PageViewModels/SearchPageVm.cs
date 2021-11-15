@@ -105,7 +105,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new PickerModel {Filter = "Search TV Shows"},
                     new PickerModel {Filter = "Search Game"}
 
-
                 });
             currentSearch = SearchText;
             SelectedFilter = FilterList[0];

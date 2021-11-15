@@ -6,6 +6,7 @@ namespace MovieSearchApp.Services.Rest
    {
         Task<(ResultStatus status, TResponse payload, string rawResponse)> GetAsync<TResponse>(string path);
         Task<(ResultStatus status, TResponse payload, string rawResponse)> PostAsync<TRequest, TResponse>(TRequest request, string path);
+       
    }
 
    public enum ResultStatus

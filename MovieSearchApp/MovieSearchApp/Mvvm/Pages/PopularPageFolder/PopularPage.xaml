@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.PopularPage.PopularPage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" >
+            <Label Grid.Row="0" Text="Popular Page" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                <Entry Grid.Column="0" Placeholder="Select a Genre" Text="{Binding GenreCheckboxText}" IsReadOnly="True"/>
+                <Button Grid.Column="0" Command="{Binding GenreCheckboxPageCommand}" IsVisible="true" Opacity="0"/>
+                <Entry Grid.Column="1" Text="{Binding SearchText}" HorizontalOptions="Fill" Placeholder="Enter A Year: Ex. 2005" />
+                
+                
+                
+                <!--Picker Grid.Column="0" ItemsSource="{Binding FilterList}" ItemDisplayBinding="{Binding Filter}"
+                        SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"/-->
+            </Grid>
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,*">
+                <Switch Grid.Column="0" IsToggled="{Binding AgeRatingVisible, Mode=TwoWay}"/>
+                <Picker Grid.Column="1" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}"/>
+                <Switch Grid.Column="2" IsToggled="{Binding LanguageVisible, Mode=TwoWay}"/>
+                <Picker Grid.Column="3" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}"
+                        SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" IsVisible="{Binding LanguageVisible}"/>
+            </Grid>
+            <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}"/>
+            <StackLayout Grid.Row="4">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding title}"/>
+                                    <Label Text="{Binding release_date}"/>
+                                    <Image Source="{Binding poster_path}"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+            <Grid ColumnDefinitions="*,*" Grid.Row="5">
+                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
+                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}"/>
+            </Grid>
+            <Button Grid.Row="6" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}"/>
+            <Label Grid.Row="6" HorizontalOptions="Center" Text="{Binding pageCounter}"/>
+            <Button Grid.Row="6" HorizontalOptions ="EndAndExpand" Text="Go Next!" Command="{Binding SearchNextPageCommand} "/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

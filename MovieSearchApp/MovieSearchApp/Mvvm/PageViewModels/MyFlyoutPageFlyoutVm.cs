@@ -2,6 +2,7 @@
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
 using MovieSearchApp.Mvvm.Pages;
+using MovieSearchApp.Mvvm.Pages.PopularPage;
 using MovieSearchApp.Mvvm.PageViewModels;
 using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;

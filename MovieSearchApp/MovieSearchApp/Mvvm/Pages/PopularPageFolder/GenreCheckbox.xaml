@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.PopularPageFolder.GenreCheckbox">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label HorizontalTextAlignment="Center"  Text="Select Genre(s)"/>
+            <ListView ItemsSource="{Binding CheckboxList}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                                <Label Text="{Binding Filter}"/>
+                                <CheckBox IsChecked="{Binding IsChecked}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Command="{Binding DoneButtonCommand}" HorizontalOptions="Center" Text="Done"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -52,5 +52,12 @@ namespace MovieSearchApp.Services
 
             return result.payload;
         }
+
+        public async Task<MovieDetailsModel> GetTitleAsync(string title, string year)
+        {
+            var result = await _restService.GetAsync<MovieDetailsModel>($"{_baseUrl}?apikey={_apiKey}&t={title}&y={year}");
+
+            return result.payload;
+        }
     }
 }

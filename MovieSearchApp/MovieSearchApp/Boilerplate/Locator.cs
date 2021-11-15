@@ -11,6 +11,8 @@ using Xamarin.Forms;
 using System.Diagnostics;
 using MovieSearchApp.Services.Alert_Service;
 using System;
+using MovieSearchApp.Mvvm.Pages.PopularPage;
+using MovieSearchApp.Mvvm.Pages.PopularPageFolder;
 
 namespace MovieSearchApp.Boilerplate
 {
@@ -48,6 +50,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<MyFlyoutPageFlyout>(Lifestyle.Singleton);
 			_IoCC.Register<RecommendationPage>(Lifestyle.Singleton);
 			_IoCC.Register<PopularPage>(Lifestyle.Singleton);
+			_IoCC.Register<GenreCheckbox>(Lifestyle.Singleton);
+
 
 
 			// Tell the IoC container about our ViewModels.
@@ -56,6 +60,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<MovieDetailsPageVM>(Lifestyle.Singleton);
 			_IoCC.Register<RecommendationPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<PopularPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<GenreCheckboxVm>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our Services!!!.
@@ -64,6 +69,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
 			_IoCC.Register<ThemoviedbService>(GetTheMovieDbService, Lifestyle.Singleton);
+			
 
 
 
@@ -138,6 +144,7 @@ namespace MovieSearchApp.Boilerplate
 			var navPage = new NavigationPage();
 			flyout.Detail = navPage;
 			App.Current.MainPage = flyout;
+			
 
 
 			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });

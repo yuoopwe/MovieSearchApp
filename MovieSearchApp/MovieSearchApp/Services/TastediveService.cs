@@ -23,7 +23,7 @@ namespace MovieSearchApp.Services
 
        public async Task<RecommendationModel> GetRecommendations(string search)
        { 
-           var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&type=movies&q=movie:{search}&info=1");
+           var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q={search}&info=1");
 
            return result.payload;
        }

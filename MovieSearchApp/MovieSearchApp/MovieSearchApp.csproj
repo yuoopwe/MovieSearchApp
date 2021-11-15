@@ -73,7 +73,10 @@
     <EmbeddedResource Update="Mvvm\Pages\MyFlyoutPageFlyout.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Mvvm\Pages\PopularPage.xaml">
+    <EmbeddedResource Update="Mvvm\Pages\PopularPageFolder\GenreCheckbox.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\PopularPageFolder\PopularPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Mvvm\Pages\RecommendationPage.xaml">
