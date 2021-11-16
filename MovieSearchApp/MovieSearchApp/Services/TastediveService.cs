@@ -19,6 +19,14 @@ namespace MovieSearchApp.Services
             _apiKey = apiKey;
             _baseUrl = baseUrl;
         }
+
+        public async Task<RecommendationModel> GetRecommendationsMovie(string search)
+        {
+            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q=movie:{search}&info=1");
+
+            return result.payload;
+        }
+
         public async Task<RecommendationModel> GetRecommendations(string search)
         {
             var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q={search}&info=1");
