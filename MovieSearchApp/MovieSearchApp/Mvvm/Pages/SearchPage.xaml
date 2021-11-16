@@ -4,34 +4,51 @@
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage"
              >
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" >
-            <Label Grid.Row="0" Text="Movie Search App" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+        <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, *, Auto, Auto"  BackgroundColor="LightSlateGray">
+            <Label Grid.Row="0" Text="Movie Search App" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20"/>
             <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
             <Grid Grid.Row="2" ColumnDefinitions="*,2*">
                 <Picker Grid.Column="0" ItemsSource="{Binding FilterList}" ItemDisplayBinding="{Binding Filter}"
-                        SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"/>
+                        SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" BackgroundColor="White"/>
 
-                <Button Text="Search" Command="{Binding SearchCommand}" Grid.Column="1"/>
+                <Button Text="Search" Command="{Binding SearchCommand}" Grid.Column="1" BackgroundColor="#2E333A" TextColor="White"/>
             </Grid>
             <StackLayout Grid.Row="3">
-                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.Search}">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding ScoresDetailsList}" BackgroundColor="#2E333A" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout>
-                                    <Label Text="{Binding Title}"/>
-                                    <Label Text="{Binding Year}"/>
-                                    <Label Text="{Binding Type}"/>
-                                    <Image Source="{Binding Poster}"/>
-                                </StackLayout>
+                                <Grid Padding="20,20,20,20" ColumnDefinitions="Auto,*">
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100" Padding="5,0,5,0" Grid.Column="1">
+                                        <Label Text="Title" Grid.Row="0"  HorizontalOptions="Start" FontSize="20" TextColor="LightBlue"/>
+                                        <Label Text="{Binding Title}" TextColor="FloralWhite" Grid.Row="1"/>
+                                        <Label Text="Release date" Grid.Row="2" FontSize="20" TextColor="LightBlue"/>
+                                        <Label Text="{Binding Released}" TextColor="FloralWhite" Grid.Row ="3"/>
+                                        <Label Text="Scores" FontSize="20" TextColor="LightBlue" Grid.Row="4"/>
+                                        <ListView ItemsSource="{Binding Ratings}" Grid.Row="5">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ViewCell>
+                                                        <Grid ColumnDefinitions="Auto,Auto">
+
+                                                            <Label Text="{Binding Source}" Grid.Column="0" TextColor="FloralWhite"/>
+                                                            <Label Text="{Binding Value}" Grid.Column="1" TextColor="FloralWhite"/>
+                                                        </Grid>
+                                                    </ViewCell>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </Grid>
+                                    <Image Source="{Binding Poster}" WidthRequest="210" HeightRequest="300" Grid.Column ="0"/>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
             <Grid ColumnDefinitions="*,*" Grid.Row="4">
-                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
-                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}"/>
+                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
+                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
             </Grid>
             <Button Grid.Row="5" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}"/>
             <Label Grid.Row="5" HorizontalOptions="Center" Text="{Binding pageCounter}"/>

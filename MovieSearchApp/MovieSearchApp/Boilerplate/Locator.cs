@@ -144,6 +144,9 @@ namespace MovieSearchApp.Boilerplate
 			var navPage = new NavigationPage();
 			flyout.Detail = navPage;
 			App.Current.MainPage = flyout;
+
+			// App.Current.MainPage = new NavigationPage();
+
 			
 
 

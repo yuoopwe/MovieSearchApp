@@ -19,8 +19,8 @@ namespace MovieSearchApp.Services.Rest
 
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> GetAsync<TResponse>(string path)
         {
-          
 
+           
             HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
 
             if (response.IsSuccessStatusCode == true)

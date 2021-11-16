@@ -12,6 +12,7 @@ using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,8 +47,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private bool _languageVisible;
         private AgeRatingModel _selectedAgeRating;
         private LanguageModel _selectedLanguage;
-        private TheMovieDbListResultModel _display;
+        private MovieDetailsModel _display;
         private IList<CheckboxModel> _checkboxList;
+        private ObservableCollection<MovieDetailsModel> _scoresDetailsList;
 
         private string genreListFormatted { get; set; }
         public List<string> genresList { get; set; }
@@ -73,7 +75,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public IList<LanguageModel> LanguageList { get; set; }
 
         public CheckboxModel currentlySelectedCheckbox { get; set; }
-        public TheMovieDbListResultModel Display
+        public MovieDetailsModel Display
         {
             get => _display;
             set => SetProperty(ref _display, value);
@@ -109,6 +111,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _pagecounter, value);
         }
 
+        public ObservableCollection<MovieDetailsModel> ScoresDetailsList
+        {
+            get => _scoresDetailsList;
+            set => SetProperty(ref _scoresDetailsList, value);
+        }
         public MovieDetailsModel DetailsResult { get; set; }
         public ThemovieDbModel Result
         {
@@ -187,6 +194,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new CheckboxModel {id = 37, Filter = "Western", IsChecked = false},
                 });
             genresList = new List<string>();
+            ScoresDetailsList = new ObservableCollection<MovieDetailsModel>();
             SearchText = "";
             Apply(CheckboxList);
             LanguageVisible = false;
@@ -212,15 +220,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 RecommendationModel recommendationResult;
-                string recommendationSearch = Display.title;
-                for (recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
+                string recommendationSearch = Display.Title;
+                for (recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
                 {
                     if (recommendationSearch == "")
                     {
                         await _alertService.DisplayAlertAsync("Message", "No Recommendations Found", "Ok");
                         break;
                     }
-                    recommendationResult = await _tastediveService.GetRecommendations(recommendationSearch);
+                    recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch);
                 }
                 await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
             }
@@ -234,11 +242,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 await _alertService.DisplayAlertAsync("Message", "Please Select A Movie First", "Ok");
             }else
-            {
-                TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(Display.id.ToString());
-                MovieDetailsModel result = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
-                DetailsResult = result;
-                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(DetailsResult));
+            {      
+                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(Display));
             }
 
 
@@ -327,19 +332,20 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         private async Task MovieSearch(string genreListFormatted)
         {
-            
+            ScoresDetailsList.Clear();
             if (LanguageVisible == true && AgeRatingVisible == true)
             {
                 ThemovieDbModel result = await _themoviedbService.DiscoverMovies(SearchText, pageCounter, genreListFormatted, SelectedLanguage.LanguageCode, SelectedAgeRating.Rating);
                 Result = result;
                 AppendPosterURLToList();
-
+                await CreateDisplayList(result);
             }
             else if (LanguageVisible == true && AgeRatingVisible == false)
             {
                 ThemovieDbModel result = await _themoviedbService.DiscoverMovies(SearchText, pageCounter, genreListFormatted, SelectedLanguage.LanguageCode, "");
                 Result = result;
                 AppendPosterURLToList();
+                await CreateDisplayList(result);
 
             }
             else if (LanguageVisible == false && AgeRatingVisible == true)
@@ -347,6 +353,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 ThemovieDbModel result = await _themoviedbService.DiscoverMovies(SearchText, pageCounter, genreListFormatted, "", SelectedAgeRating.Rating);
                 Result = result;
                 AppendPosterURLToList();
+                await CreateDisplayList(result);
 
             }
             else
@@ -354,10 +361,23 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 ThemovieDbModel result = await _themoviedbService.DiscoverMovies(SearchText, pageCounter, genreListFormatted, "", "");
                 Result = result;
                 AppendPosterURLToList();
+                await CreateDisplayList(result);
+
+
             }
         }
 
+        public async Task CreateDisplayList(ThemovieDbModel result)
+        {
+            foreach (var item in result.results)
+            {
+                TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(item.id.ToString());
+                MovieDetailsModel result2 = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
+                ScoresDetailsList.Add(result2);
 
+            }
+
+        }
         public void AppendPosterURLToList()
         {
             for(int i=0; i < Result.results.Count; i++)

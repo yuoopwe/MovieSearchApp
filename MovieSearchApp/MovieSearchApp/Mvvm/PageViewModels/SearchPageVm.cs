@@ -39,14 +39,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public readonly IPageServiceZero _pageService;
         public string _searchText;
         public MovieDetailsModel _detailsresult;
-        public MovieModel _display;
+        public MovieDetailsModel _display;
         public int _pagecounter;
         private PickerModel _selectedFilter;
         private List<MovieModel> _searchResult;
-        private string currentSearch { get; set; }
+        public string currentSearch { get; set; }
         private PickerModel currentlySelectedFilter { get; set; }
 
         public IList<PickerModel> FilterList { get; set; }
+        public ObservableCollection<MovieDetailsModel> ScoresDetailsList
+        {
+            get => _scoresDetailsList;
+            set => SetProperty(ref _scoresDetailsList, value);
+        }
         public List<MovieModel> SearchResult
         {
             get => _searchResult;
@@ -67,6 +72,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
 
         public RecommendationModel RecommendationResult;
+        private ObservableCollection<MovieDetailsModel> _scoresDetailsList;
+
         public MovieDetailsModel DetailsResult
         {
             get => _detailsresult;
@@ -79,7 +86,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _result, value);
         }
 
-        public MovieModel Display
+        public MovieDetailsModel Display
         {
             get => _display;
             set => SetProperty(ref _display, value);
@@ -109,6 +116,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             currentSearch = SearchText;
             SelectedFilter = FilterList[0];
             currentlySelectedFilter = SelectedFilter;
+            ScoresDetailsList = new ObservableCollection<MovieDetailsModel>();
 
             GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
             SearchNextPageCommand = new CommandBuilder().SetExecuteAsync(GetNextPageExecute).Build();
@@ -163,33 +171,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             pageCounter = 1;
             List<MovieModel> searchResult = new List<MovieModel>();
-            switch (SelectedFilter.Filter)
-            {
-                case "Search TV Shows":
-                    result = await _omdbService.GetSeriesAsync(SearchText, pageCounter);
-                    Result = result;
-                    break;
-
-                case "Search Movies":
-                    result = await _omdbService.GetMoviesAsync(SearchText, pageCounter);
-                    Result = result;
-                    break;
-
-                case "Search Game":
-                    result = await _omdbService.GetGamesAsync(SearchText, pageCounter);
-                    Result = result;
-                    break;
-
-                default:
-                    result = await _omdbService.GetAllAsync(SearchText, pageCounter);
-                    Result = result;
-                    break;
-            }
-            if (result.Response == "False")
-            {
-                await _alertService.DisplayAlertAsync("Message", "No Result Found, Please Try Again", "Ok");
-            }
-            
+            currentSearch = SearchText;
+            await SearchMovies();
             currentSearch = SearchText;
             currentlySelectedFilter = SelectedFilter;
             return pageCounter;
@@ -215,35 +198,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     if (SearchText != null)
                     {
 
-                        switch (SelectedFilter.Filter)
-                        {
-                            case "Search TV Shows":
-                                result = await _omdbService.GetSeriesAsync(currentSearch, pageCounter);
-                                Result = result;
-                                break;
+                     await SearchMovies();
 
-                            case "Search Movies":
-                                result = await _omdbService.GetMoviesAsync(currentSearch, pageCounter);
-                                Result = result;
-                                break;
-
-                            case "Search Game":
-                                result = await _omdbService.GetGamesAsync(currentSearch, pageCounter);
-                                Result = result;
-                                break;
-
-                            default:
-                                result = await _omdbService.GetAllAsync(currentSearch, pageCounter);
-                                Result = result;
-                                break;
-                        }
-
-                        if (result.Response == "False")
-                        {
-                            await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
-                            pageCounter = currentCounter;
-                        }
-                    }
+                }
                     else
                     {
                         await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
@@ -283,34 +240,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 else
                 {
 
-                    switch (SelectedFilter.Filter)
-                    {
-                        case "Search TV Shows":
-                            result = await _omdbService.GetSeriesAsync(currentSearch, pageCounter);
-                            Result = result;
-                            break;
+                    await SearchMovies();
 
-                        case "Search Movies":
-                            result = await _omdbService.GetMoviesAsync(currentSearch, pageCounter);
-                            Result = result;
-                            break;
-
-                        case "Search Game":
-                            result = await _omdbService.GetGamesAsync(currentSearch, pageCounter);
-                            Result = result;
-                            break;
-
-                        default:
-                            result = await _omdbService.GetAllAsync(currentSearch, pageCounter);
-                            Result = result;
-                            break;
-                    }
-
-                    if (result.Response == "False")
-                    {
-                        await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
-                        pageCounter = currentCounter;
-                    }
                 }
             }
 
@@ -318,6 +249,71 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             Display = null;
             return pageCounter;
         }
+
+
+        public async Task SearchMovies()
+        {
+            ScoresDetailsList.Clear();
+            switch (SelectedFilter.Filter)
+            {
+                case "Search TV Shows":
+                    result = await _omdbService.GetSeriesAsync(currentSearch, pageCounter);
+                    if (result.Response == "False")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No Result Found", "Ok");
+                        break;
+                    }
+                    await CreateDisplayList(result);
+                    Result = result;
+                    break;
+
+                case "Search Movies":
+                    result = await _omdbService.GetMoviesAsync(currentSearch, pageCounter);
+                    if (result.Response == "False")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No Result Found", "Ok");
+                        break;
+                    }
+                    await CreateDisplayList(result);
+                    Result = result;
+                    break;
+
+                case "Search Game":
+                    result = await _omdbService.GetGamesAsync(currentSearch, pageCounter);
+                    if (result.Response == "False")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No Result Found", "Ok");
+                        break;
+                    }
+                    await CreateDisplayList(result);
+                    Result = result;
+                    break;
+
+                default:
+                    result = await _omdbService.GetAllAsync(currentSearch, pageCounter);
+                    if (result.Response == "False")
+                    {
+                        await _alertService.DisplayAlertAsync("Message", "No Result Found", "Ok");
+                        break;
+                    }
+                    await CreateDisplayList(result);
+                    Result = result;                 
+                    break;
+            }
+        }
+        public async Task CreateDisplayList(MovieCollectionModel result)
+        {
+            foreach (var item in result.Search)
+            {
+               
+                MovieDetailsModel result2 = await _omdbService.GetMovieDetailsWithIdAsync(item.imdbID);
+                ScoresDetailsList.Add(result2);
+
+            }
+
+        }
+
+        
 
 
         // protected override async void OnPropertyChanged([CallerMemberName] string propertyName = null)
