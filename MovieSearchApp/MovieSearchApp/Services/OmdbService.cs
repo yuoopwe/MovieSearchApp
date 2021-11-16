@@ -20,12 +20,14 @@ namespace MovieSearchApp.Services
             _baseUrl = baseUrl;
         }
 
+
         public async Task<MovieCollectionModel> GetAllAsync(string search, int pageCounter)
         {
             var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}");
 
             return result.payload;
         }
+
 
         public async Task<MovieCollectionModel> GetSeriesAsync(string search, int pageCounter)
         {

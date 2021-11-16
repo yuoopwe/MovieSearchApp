@@ -4,7 +4,7 @@
              x:Class="MovieSearchApp.Mvvm.Pages.PopularPage.PopularPage">
     <ContentPage.Content>
         <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" BackgroundColor="LightSlateGray">
-            <Label Grid.Row="0" Text="Popular Page" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            <Label Grid.Row="0" Text="Search Popular Movies!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20"/>
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,*">
                 <Label Text="Genre Filter" VerticalOptions="Center" Grid.Column="0"/>
                 <Entry Grid.Column="1" Placeholder="Select a Genre" Text="{Binding GenreCheckboxText}" IsReadOnly="True"/>
@@ -28,7 +28,7 @@
             </Grid>
             <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}" BackgroundColor="#2E333A" TextColor="White"/>
             <StackLayout Grid.Row="4">
-                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}" BackgroundColor="#2E333A">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}" BackgroundColor="#2E333A" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
