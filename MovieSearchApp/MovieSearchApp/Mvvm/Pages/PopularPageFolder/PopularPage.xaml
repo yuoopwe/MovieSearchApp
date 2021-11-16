@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.PopularPage.PopularPage">
     <ContentPage.Content>
-        <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" >
+        <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" BackgroundColor="LightSlateGray">
             <Label Grid.Row="0" Text="Popular Page" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,*">
                 <Label Text="Genre Filter" VerticalOptions="Center" Grid.Column="0"/>
@@ -20,21 +20,21 @@
             <Grid Grid.Row="2" ColumnDefinitions="Auto,80,*,Auto,80,*">
                 <Switch Grid.Column="1" IsToggled="{Binding AgeRatingVisible, Mode=TwoWay}"/>
                 <Label Text="Age Rating Filter" Grid.Column="0" VerticalOptions="Center"/>
-                <Picker Grid.Column="2" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}"/>
-                <Switch Grid.Column="4" IsToggled="{Binding LanguageVisible, Mode=TwoWay}"/>
+                <Picker Grid.Column="2" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}" BackgroundColor="White"/>
+                <Switch Grid.Column="4" IsToggled="{Binding LanguageVisible, Mode=TwoWay}" />
                 <Label Text="Language Filter" Grid.Column="3" VerticalOptions="Center"/>
-                <Picker Grid.Column="5" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}"
+                <Picker Grid.Column="5" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}" BackgroundColor="White"
                         SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" IsVisible="{Binding LanguageVisible}"/>
             </Grid>
-            <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}" />
+            <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}" BackgroundColor="#2E333A" TextColor="White"/>
             <StackLayout Grid.Row="4">
-                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}">
+                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}" BackgroundColor="#2E333A">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout>
-                                    <Label Text="{Binding title}"/>
-                                    <Label Text="{Binding release_date}"/>
+                                    <Label Text="{Binding title}" TextColor="FloralWhite"/>
+                                    <Label Text="{Binding release_date}" TextColor="FloralWhite"/>
                                     <Image Source="{Binding poster_path}"/>
                                 </StackLayout>
                             </ViewCell>
@@ -43,10 +43,10 @@
                 </ListView>
             </StackLayout>
             <Grid ColumnDefinitions="*,*" Grid.Row="5">
-                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
-                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}"/>
+                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
+                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
             </Grid>
-            <Button Grid.Row="6" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}"/>
+            <Button Grid.Row="6" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}" />
             <Label Grid.Row="6" HorizontalOptions="Center" Text="{Binding pageCounter}"/>
             <Button Grid.Row="6" HorizontalOptions ="EndAndExpand" Text="Go Next!" Command="{Binding SearchNextPageCommand} "/>
         </Grid>
