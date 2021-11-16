@@ -6,7 +6,7 @@
     <ContentPage.Content>
         <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, *, Auto, Auto"  BackgroundColor="LightSlateGray">
             <Label Grid.Row="0" Text="Movie Search App" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20"/>
-            <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
+            <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill" Placeholder="Seach Movie..."/>
             <Grid Grid.Row="2" ColumnDefinitions="*,2*">
                 <Picker Grid.Column="0" ItemsSource="{Binding FilterList}" ItemDisplayBinding="{Binding Filter}"
                         SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" BackgroundColor="White"/>
