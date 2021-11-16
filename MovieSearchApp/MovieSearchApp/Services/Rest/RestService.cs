@@ -11,17 +11,17 @@ namespace MovieSearchApp.Services.Rest
         private readonly HttpClient _httpClient;
         private readonly string _host;
 
-        public RestService(HttpClient httpClient, string baseUrl)
+        public RestService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _host = baseUrl;
+            
         }
 
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> GetAsync<TResponse>(string path)
         {
-            string uri = Path.Combine(_host, path);
 
-            HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(uri));
+           
+            HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
 
             if (response.IsSuccessStatusCode == true)
             {
@@ -41,12 +41,12 @@ namespace MovieSearchApp.Services.Rest
 
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> PostAsync<TRequest, TResponse>(TRequest request, string path)
         {
-            string uri = Path.Combine(_host, path);
+            
 
             string json = JsonConvert.SerializeObject(request);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _httpClient.PostAsync(Sanitise(uri), data);
+            HttpResponseMessage response = await _httpClient.PostAsync(Sanitise(path), data);
 
             if (response.IsSuccessStatusCode == true)
             {

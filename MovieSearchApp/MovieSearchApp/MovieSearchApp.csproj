@@ -3,12 +3,47 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\profile.png" />
+    <None Remove="Assets\search.png" />
+    <None Remove="Assets\Settings.png" />
+    <None Remove="Images\Journal.png" />
+    <None Remove="Images\menu144.png" />
+    <None Remove="Images\menu96.png" />
+    <None Remove="Images\popular.png" />
+    <None Remove="Images\profile1.png" />
+    <None Remove="Images\search1.png" />
+    <None Remove="Images\Settings1.png" />
+    <None Remove="Images\signout.png" />
+    <None Remove="Images\tgBtn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\Journal.png" />
+    <EmbeddedResource Include="Images\menu144.png" />
+    <EmbeddedResource Include="Images\menu96.png" />
+    <EmbeddedResource Include="Images\popular.png" />
+    <EmbeddedResource Include="Images\profile1.png" />
+    <EmbeddedResource Include="Images\search1.png" />
+    <EmbeddedResource Include="Images\Settings1.png" />
+    <EmbeddedResource Include="Images\signout.png" />
+    <EmbeddedResource Include="Images\tgBtn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\profile.png" />
+    <Resource Include="Assets\Settings.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FunctionZero.MvvmZero" Version="2.2.4" />
@@ -19,7 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Rest\" />
+    <Resource Include="Assets\search.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +64,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Mvvm\Pages\MovieDetailsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\MyFlyoutPageDetail.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\MyFlyoutPageFlyout.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\PopularPageFolder\GenreCheckbox.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\PopularPageFolder\PopularPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\RecommendationPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Mvvm\Pages\SearchPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

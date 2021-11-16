@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MovieSearchApp;assembly=MovieSearchApp"
+             x:Class="MovieSearchApp.Mvvm.Pages.MyFlyoutPageFlyout"
+             Title="Flyout">
+    <StackLayout BackgroundColor="#2E333A">
+    <ListView SeparatorVisibility="None"
+              HasUnevenRows="true"
+              ItemsSource="{Binding MenuItems}"
+              VerticalScrollBarVisibility="Never"
+              HorizontalScrollBarVisibility="Never"
+              SelectedItem="{Binding SelectedDetailItem, Mode=TwoWay}">
+      <ListView.Header>
+                <Grid BackgroundColor="#353b44" ColumnDefinitions="*,2*">
+                    <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+          </Grid.RowDefinitions>
+                    <Image
+                        Source="{Binding tgBtn}"
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Aspect="AspectFit"
+                        Scale="0.8"
+                        HorizontalOptions="Start"
+                        VerticalOptions="End"
+                        Margin="-10,-30,0,-20"/>
+                    
+                    <Label
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        Text="Menu"
+                        FontSize="35"
+                        Style="{DynamicResource SubtitleStyle}"
+                        VerticalTextAlignment="End"
+                        TextColor="FloralWhite"/>
+        </Grid>
+      </ListView.Header>
+      <ListView.ItemTemplate>
+        <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="5,20" ColumnDefinitions="*,2*">
+                            <Image Aspect="AspectFit"
+                                   HorizontalOptions="Start" 
+                                   VerticalOptions="Fill" 
+                                   Source ="{Binding Icon}" 
+                                   HeightRequest="60"
+                                   Grid.Column= "0"/>
+
+                            <Label Text="{Binding Title}" 
+                                    Grid.Column="1"
+                                   VerticalTextAlignment="Center"
+                                   FontSize="24"
+                                   TextColor="White"
+                                   />
+                        </Grid>
+                    </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </StackLayout>
+</ContentPage>

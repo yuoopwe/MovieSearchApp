@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.MovieDetailsPage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="5,0,5,0" BackgroundColor="LightSlateGray">
+            <Label Grid.Row="0" Text="Movie Details!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20" />
+            <StackLayout Grid.Row="1">
+                <Grid Padding="5,5,5,5" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" BackgroundColor="#2E333A">
+                    <Label Text="Title" Grid.Column="0" Grid.Row="0"  FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Title}" Grid.Column="0" Grid.Row="1" FontSize="15" TextColor="White" />
+                    <Label Text="Year" Grid.Column="1" Grid.Row="0" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Year}" Grid.Column="1" Grid.Row="1" FontSize="15" TextColor="White" />
+                    <Label Text="Rating" Grid.Column="1" Grid.Row="2" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Rated}" Grid.Column="1" Grid.Row="3" FontSize="15" TextColor="White" />
+                    <Label Text="Date" Grid.Column="0" Grid.Row="2" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Released}" Grid.Column="0" Grid.Row="3" FontSize="15" TextColor="White"/>
+                    <Label Text="Runtime" Grid.Column="1" Grid.Row="4" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Runtime}" Grid.Column="1" Grid.Row="5" FontSize="15" TextColor="White"/>
+                    <Label Text="Genre" Grid.Column="0" Grid.Row="4" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Genre}" Grid.Column="0" Grid.Row="5" FontSize="15" TextColor="White" />
+                    <Label Text="Director" Grid.Column="1" Grid.Row="6" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Director}" Grid.Column="1" Grid.Row="7" FontSize="15" TextColor="White" />
+                    <Label Text="Writers" Grid.Column="0" Grid.Row="6" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Writer}" Grid.Column="0" Grid.Row="7" FontSize="15" TextColor="White" />
+                    <Label Text="Actors" Grid.Column="1" Grid.Row="8" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Actors}" Grid.Column="1" Grid.Row="9" FontSize="15" TextColor="White" />
+                    <Label Text="Language" Grid.Column="0" Grid.Row="8" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Language}" Grid.Column="0" Grid.Row="9" FontSize="15" TextColor="White" />
+                    <Label Text="Country" Grid.Column="1" Grid.Row="10" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Country}" Grid.Column="1" Grid.Row="11" FontSize="15" TextColor="White" />
+                    <Label Text="Awards" Grid.Column="0" Grid.Row="10" FontSize="18" FontAttributes="Bold" TextColor="LightBlue" />
+                    <Label Text="{Binding DetailsResult.Awards}" Grid.Column="0" Grid.Row="11" FontSize="15" TextColor="White" />
+                    <Label Text="Plot" FontSize="18" FontAttributes="Bold" Grid.Row="12" TextColor="LightBlue"/>
+                    <Label Text="{Binding DetailsResult.Plot}" FontSize="15" Grid.Row="13" TextColor="White" />
+                </Grid>
+           
+                <ListView ItemsSource="{Binding DetailsResult.Ratings}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <Label Text="{Binding Source}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding Value}" HorizontalOptions="Center" TextColor="White"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+            <Image Grid.Row="2" HeightRequest="250" Source="{Binding DetailsResult.Poster}"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
