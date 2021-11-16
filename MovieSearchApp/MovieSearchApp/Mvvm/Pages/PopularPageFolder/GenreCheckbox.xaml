@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.PopularPageFolder.GenreCheckbox">
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout Padding="5,0,5,0">
             <Label HorizontalTextAlignment="Center"  Text="Select Genre(s)"/>
             <ListView ItemsSource="{Binding CheckboxList}">
                 <ListView.ItemTemplate>

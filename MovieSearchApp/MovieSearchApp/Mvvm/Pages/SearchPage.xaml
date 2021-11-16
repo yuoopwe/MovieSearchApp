@@ -4,7 +4,7 @@
              x:Class="MovieSearchApp.Mvvm.Pages.SearchPage"
              >
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" >
+        <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" >
             <Label Grid.Row="0" Text="Movie Search App" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
             <Entry Grid.Row="1" Text="{Binding SearchText}" HorizontalOptions="Fill"/>
             <Grid Grid.Row="2" ColumnDefinitions="*,2*">

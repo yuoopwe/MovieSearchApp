@@ -3,26 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.PopularPage.PopularPage">
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" >
+        <Grid Padding ="5,0,5,0" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto" >
             <Label Grid.Row="0" Text="Popular Page" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
-            <Grid Grid.Row="1" ColumnDefinitions="*,*">
-                <Entry Grid.Column="0" Placeholder="Select a Genre" Text="{Binding GenreCheckboxText}" IsReadOnly="True"/>
-                <Button Grid.Column="0" Command="{Binding GenreCheckboxPageCommand}" IsVisible="true" Opacity="0"/>
-                <Entry Grid.Column="1" Text="{Binding SearchText}" HorizontalOptions="Fill" Placeholder="Enter A Year: Ex. 2005" />
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,*">
+                <Label Text="Genre Filter" VerticalOptions="Center" Grid.Column="0"/>
+                <Entry Grid.Column="1" Placeholder="Select a Genre" Text="{Binding GenreCheckboxText}" IsReadOnly="True"/>
+                <Button Grid.Column="1" Command="{Binding GenreCheckboxPageCommand}" IsVisible="true" Opacity="0"/>
+                <Label Text="Year Selection" VerticalOptions="Center" Grid.Column="2"/>
+                <Entry Grid.Column="3" Text="{Binding SearchText}" HorizontalOptions="Fill" Placeholder="Enter A Year: Ex. 2005" />
                 
                 
                 
                 <!--Picker Grid.Column="0" ItemsSource="{Binding FilterList}" ItemDisplayBinding="{Binding Filter}"
                         SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"/-->
             </Grid>
-            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,*">
-                <Switch Grid.Column="0" IsToggled="{Binding AgeRatingVisible, Mode=TwoWay}"/>
-                <Picker Grid.Column="1" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}"/>
-                <Switch Grid.Column="2" IsToggled="{Binding LanguageVisible, Mode=TwoWay}"/>
-                <Picker Grid.Column="3" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}"
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,80,*,Auto,80,*">
+                <Switch Grid.Column="1" IsToggled="{Binding AgeRatingVisible, Mode=TwoWay}"/>
+                <Label Text="Age Rating Filter" Grid.Column="0" VerticalOptions="Center"/>
+                <Picker Grid.Column="2" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}"/>
+                <Switch Grid.Column="4" IsToggled="{Binding LanguageVisible, Mode=TwoWay}"/>
+                <Label Text="Language Filter" Grid.Column="3" VerticalOptions="Center"/>
+                <Picker Grid.Column="5" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}"
                         SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" IsVisible="{Binding LanguageVisible}"/>
             </Grid>
-            <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}"/>
+            <Button Grid.Row="3" Text="Search!" Command="{Binding GetPopularMoviesCommand}" />
             <StackLayout Grid.Row="4">
                 <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding Result.results}">
                     <ListView.ItemTemplate>
