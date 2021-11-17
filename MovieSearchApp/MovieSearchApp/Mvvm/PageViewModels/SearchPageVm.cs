@@ -186,7 +186,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
 
         //Gets next page of movies/etc.
-        public async Task<int> GetNextPageExecute()
+        public async Task GetNextPageExecute()
         {
             int currentCounter;
             List<MovieModel> searchResult = new List<MovieModel>();
@@ -217,11 +217,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
 
             Display = null;
-            return pageCounter;
+  
         }
         
         //gets previous page of movies etc.
-        public async Task<int> GetPreviousPageExecute()
+        public async Task GetPreviousPageExecute()
         {
             int currentCounter = pageCounter;
             pageCounter--;
@@ -254,7 +254,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
 
             Display = null;
-            return pageCounter;
         }
 
         //function that searches movies, used in above methods, cuts repetition
