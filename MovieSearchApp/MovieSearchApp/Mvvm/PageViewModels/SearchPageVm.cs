@@ -116,6 +116,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             currentSearch = SearchText;
             SelectedFilter = FilterList[0];
             currentlySelectedFilter = SelectedFilter;
+            //must be observable collection to access it from xaml
             ScoresDetailsList = new ObservableCollection<MovieDetailsModel>();
 
             GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
@@ -126,6 +127,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
+        //function that controls getting recommendations and bringing us to this page
         public async Task GetRecommendationsExecute()
         {
             string type;
@@ -148,8 +150,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
             RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(Display.Title), type );
             RecommendationResult = recommendationResult;
-            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
+            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult));
         }
+
+        //Gets movie details and takes us to this page
         public async Task GetMovieDetailsExecute()
         {
             if (Display == null)
@@ -167,19 +171,21 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
+        
+        //Searches for movies/etc. and displays on page 
         public async Task<int> SearchCommandExecute()
         {
             pageCounter = 1;
             List<MovieModel> searchResult = new List<MovieModel>();
             currentSearch = SearchText;
             await SearchMovies();
-            currentSearch = SearchText;
             currentlySelectedFilter = SelectedFilter;
             return pageCounter;
 
         }
 
 
+        //Gets next page of movies/etc.
         public async Task<int> GetNextPageExecute()
         {
             int currentCounter;
@@ -187,33 +193,34 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             currentCounter = pageCounter;
             pageCounter++;
 
-                if (currentlySelectedFilter != SelectedFilter)
+            if (currentlySelectedFilter != SelectedFilter)
+            {
+                await _alertService.DisplayAlertAsync("Message", "You must start a new search with the required filter selected before changing page", "Ok");
+                SelectedFilter = currentlySelectedFilter;
+                pageCounter--;
+            }
+            else
+            {
+                if (SearchText != null)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "You must start a new search with the required filter selected before changing page", "Ok");
-                    SelectedFilter = currentlySelectedFilter;
-                    pageCounter--;
-                }
-                else
-                {
-                    if (SearchText != null)
-                    {
 
-                     await SearchMovies();
+                  await SearchMovies();
 
                 }
-                    else
-                    {
-                        await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
-                        pageCounter = currentCounter;
-                    }
+               else
+               {
+                   await _alertService.DisplayAlertAsync("Message", "Please enter a movie and try again", "Ok");
+                   pageCounter = currentCounter;
+               }
 
-                }
+            }
 
 
-                Display = null;
-                return pageCounter;
+            Display = null;
+            return pageCounter;
         }
         
+        //gets previous page of movies etc.
         public async Task<int> GetPreviousPageExecute()
         {
             int currentCounter = pageCounter;
@@ -250,7 +257,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             return pageCounter;
         }
 
-
+        //function that searches movies, used in above methods, cuts repetition
         public async Task SearchMovies()
         {
             ScoresDetailsList.Clear();
@@ -301,6 +308,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     break;
             }
         }
+
+        //This is how we create the list of objects that we will display on screen as we arent pulling it directly from the api we must make it ourselves
         public async Task CreateDisplayList(MovieCollectionModel result)
         {
             foreach (var item in result.Search)

@@ -219,6 +219,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
             else
             {
+                
                 RecommendationModel recommendationResult;
                 string recommendationSearch = Display.Title;
                 for (recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
@@ -230,7 +231,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     }
                     recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch);
                 }
-                await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
+                await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult));
             }
 
 
