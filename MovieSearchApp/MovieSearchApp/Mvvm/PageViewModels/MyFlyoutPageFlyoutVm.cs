@@ -64,10 +64,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task SearchPageExecute()
         {
+            await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
         }
         public async Task PopularPageExecute()
         {
+            await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) => { });
         }
 
