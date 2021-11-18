@@ -37,6 +37,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
         }
         public ICommand SearchPageCommand { get; }
+        public ICommand LoginPageCommand { get; }
+
         public ICommand PopularPageCommand { get; }
 
         public ObservableCollection<FlyoutMenuModel> MenuItems { get; set; }
@@ -46,6 +48,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             _alertService = alertService;
 
+            LoginPageCommand = new CommandBuilder().SetExecuteAsync(LoginPageExecute).Build();
             PopularPageCommand = new CommandBuilder().SetExecuteAsync(PopularPageExecute).Build();
             SearchPageCommand = new CommandBuilder().SetExecuteAsync(SearchPageExecute).Build();
             tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
@@ -56,7 +59,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new FlyoutMenuModel { Id = 2, Title = "Journal",Icon=ImageSource.FromResource("MovieSearchApp.Images.Journal.png") },
                     new FlyoutMenuModel { Id = 3, Title = "Profile" ,Icon=ImageSource.FromResource("MovieSearchApp.Images.profile1.png")},
                     new FlyoutMenuModel { Id = 4, Title = "Settings",Icon=ImageSource.FromResource("MovieSearchApp.Images.Settings1.png") },
-                    new FlyoutMenuModel { Id = 5, Title = "Sign out",Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
+                    new FlyoutMenuModel { Id = 5, Title = "Sign out", Command=LoginPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
 
                 });
 
@@ -71,6 +74,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) => { });
+        }
+
+        public async Task LoginPageExecute()
+        {
+            await _pageService.PopToRootAsync();
+            await _pageService.PushPageAsync<LoginPage, LoginPageVm>((vm) => { });
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)

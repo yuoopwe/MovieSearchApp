@@ -52,6 +52,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<PopularPage>(Lifestyle.Singleton);
 			_IoCC.Register<GenreCheckbox>(Lifestyle.Singleton);
 			_IoCC.Register<TrailerPage>(Lifestyle.Singleton);
+			_IoCC.Register<LoginPage>(Lifestyle.Singleton);
+
 
 
 
@@ -64,6 +66,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<PopularPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<GenreCheckboxVm>(Lifestyle.Singleton);
 			_IoCC.Register<TrailerPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<LoginPageVm>(Lifestyle.Singleton);
 
 
 
