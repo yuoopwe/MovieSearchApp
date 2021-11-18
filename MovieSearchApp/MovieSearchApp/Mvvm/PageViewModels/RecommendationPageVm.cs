@@ -75,6 +75,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task Init(RecommendationModel model)
         {
+            MovieObjectList.Clear();
             RecommendationResult = model;
             foreach (var item in model.Similar.Results)
             {

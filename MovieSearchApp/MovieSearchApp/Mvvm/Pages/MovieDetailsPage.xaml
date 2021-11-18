@@ -48,7 +48,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <Image Grid.Row="2" HeightRequest="250" Source="{Binding DetailsResult.Poster}"/>
+            <!--Image Grid.Row="2" HeightRequest="250" Source="{Binding DetailsResult.Poster}"/-->
         </Grid>
     </ContentPage.Content>
 </ContentPage>

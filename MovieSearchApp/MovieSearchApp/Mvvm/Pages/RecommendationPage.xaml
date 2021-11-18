@@ -38,8 +38,8 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <Button Grid.Row="2" Text="Get More Details" Command="{Binding GetDetailsCommand}"/>
-            <Button Grid.Row="3" Text="Watch The Trailer" Command="{Binding ShowTrailerCommand}"/>
+            <Button Grid.Row="2" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="White"/>
+            <Button Grid.Row="3" Text="Watch The Trailer" Command="{Binding ShowTrailerCommand}" BackgroundColor="#2E333A" TextColor="White"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
