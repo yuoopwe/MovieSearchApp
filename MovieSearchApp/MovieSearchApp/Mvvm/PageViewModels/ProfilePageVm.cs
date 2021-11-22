@@ -16,8 +16,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
     {
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
+        private string _profileDescriptionText;
         private string _profileNameText;
-
+        public string ProfileDescriptionText
+        {
+            get => _profileDescriptionText;
+            set => SetProperty(ref _profileDescriptionText, value);
+        }
         public string ProfileNameText
         {
             get => _profileNameText;
@@ -70,6 +75,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
             AccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
+            ProfileDescriptionText = accountDetails.ProfileDescription;
         }
 
     }

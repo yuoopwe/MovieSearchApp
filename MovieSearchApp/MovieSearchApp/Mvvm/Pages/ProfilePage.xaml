@@ -6,6 +6,7 @@
         <StackLayout>
             <Entry Text="{Binding ProfileNameText}"/>
             <Button Text="Change Name" Command="{Binding ChangeProfileNameCommand}"/>
+            <Label Text="{Binding ProfileDescriptionText}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
