@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Configuration;
+using Npgsql;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -16,8 +16,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
     {
         private string _passwordText;
         private string _usernameText;
-        private IAlertService _alertService;
-        private IPageServiceZero _pageService;
+        private readonly IAlertService _alertService;
+        private readonly IPageServiceZero _pageService;
 
         public ICommand RegisterCommand { get; }
         public ICommand LoginCommand { get; }
@@ -55,7 +55,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 //Check account is made
                 SqlConnection sqlConnection = new SqlConnection();
                 SqlCommand sqlCommand = new SqlCommand();
-                sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+                sqlConnection.ConnectionString = @"Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
                 sqlConnection.Open();
                 sqlCommand.Connection = sqlConnection;
                 sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
@@ -111,7 +111,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             SqlConnection sqlConnection = new SqlConnection();
             SqlCommand sqlCommand = new SqlCommand();
-            sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            sqlConnection.ConnectionString = @"Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
             sqlConnection.Open();
             sqlCommand.Connection = sqlConnection;
             sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
