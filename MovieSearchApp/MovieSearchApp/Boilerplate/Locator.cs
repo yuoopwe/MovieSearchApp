@@ -67,7 +67,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<LoginPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<ProfilePageVm>(Lifestyle.Singleton);
 
-
+			
 
 
 			// Tell the IoC container about our Services!!!.
@@ -155,11 +155,11 @@ namespace MovieSearchApp.Boilerplate
 			// App.Current.MainPage = new NavigationPage();
 
 			
-
-
 			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
 
 		}
+
+
 
 		/// <summary>
 		/// For debug purposes to let us know when a Page is assembled by the PageService

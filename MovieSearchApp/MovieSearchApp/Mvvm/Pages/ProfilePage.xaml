@@ -4,7 +4,8 @@
              x:Class="MovieSearchApp.Mvvm.Pages.ProfilePage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Name"/>
+            <Entry Text="{Binding ProfileNameText}"/>
+            <Button Text="Change Name" Command="{Binding ChangeProfileNameCommand}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
+
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class MyFlyoutPageFlyoutVm : MvvmZeroBaseVm
@@ -23,9 +24,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public OmdbService _omdbService;
         public IPageServiceZero _pageService;
         public IAlertService _alertService;
+        private LoginPageVm _loginPage;
         public ImageSource tgBtn { get; set; }
         private FlyoutMenuModel _selectedDetailItem;
-
+        private AccountDetailsModel AccountDetails { get; set; }
         public FlyoutMenuModel SelectedDetailItem { get => _selectedDetailItem; 
             set
             {
@@ -38,7 +40,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public ICommand SearchPageCommand { get; }
         public ICommand LoginPageCommand { get; }
-
+        public ICommand ProfilePageCommand { get; }
         public ICommand PopularPageCommand { get; }
 
         public ObservableCollection<FlyoutMenuModel> MenuItems { get; set; }
@@ -47,17 +49,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _omdbService = omdbService;
             _pageService = pageService;
             _alertService = alertService;
-
+          
             LoginPageCommand = new CommandBuilder().SetExecuteAsync(LoginPageExecute).Build();
             PopularPageCommand = new CommandBuilder().SetExecuteAsync(PopularPageExecute).Build();
             SearchPageCommand = new CommandBuilder().SetExecuteAsync(SearchPageExecute).Build();
+            ProfilePageCommand = new CommandBuilder().SetExecuteAsync(ProfilePageExecute).Build();
+
             tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
             MenuItems = new ObservableCollection<FlyoutMenuModel>(new[]
             {
                     new FlyoutMenuModel { Id = 0, Title = "Search" , Command=SearchPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.search1.png")},
                     new FlyoutMenuModel { Id = 1, Title = "Popular Movies", Command=PopularPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.popular.png") },
                     new FlyoutMenuModel { Id = 2, Title = "Journal",Icon=ImageSource.FromResource("MovieSearchApp.Images.Journal.png") },
-                    new FlyoutMenuModel { Id = 3, Title = "Profile" ,Icon=ImageSource.FromResource("MovieSearchApp.Images.profile1.png")},
+                    new FlyoutMenuModel { Id = 3, Title = "Profile" , Command=ProfilePageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.profile1.png")},
                     new FlyoutMenuModel { Id = 4, Title = "Settings",Icon=ImageSource.FromResource("MovieSearchApp.Images.Settings1.png") },
                     new FlyoutMenuModel { Id = 5, Title = "Sign out", Command=LoginPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
 
@@ -69,6 +73,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
+        }
+
+        public async Task ProfilePageExecute()
+        {
+            await _pageService.PopToRootAsync();
+            await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.init(AccountDetails));
         }
         public async Task PopularPageExecute()
         {
@@ -95,7 +105,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
         }
 
+        public void PullAccountDetails(AccountDetailsModel AccountDetail)
+        {
+            AccountDetails = AccountDetail;
 
+        }
 
     }
 }

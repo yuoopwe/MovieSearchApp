@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Configuration;
+using MovieSearchApp.Models;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -16,11 +17,28 @@ namespace MovieSearchApp.Mvvm.PageViewModels
     {
         private string _passwordText;
         private string _usernameText;
+        private readonly MyFlyoutPageFlyoutVm _flyoutVm;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
+        private bool _loggedIn;
+        private bool _signedOut;
 
+        public bool LoggedIn
+        {
+            get => _loggedIn;
+            set => SetProperty(ref _loggedIn, value);
+        }
+
+        public bool SignedOut
+        {
+            get => _signedOut;
+            set => SetProperty(ref _signedOut, value);
+        }
+        public AccountDetailsModel AccountDetails { get; set; }
         public ICommand RegisterCommand { get; }
         public ICommand LoginCommand { get; }
+        public ICommand SignoutCommand { get; }
+
         public string PasswordText
         {
             get => _passwordText;
@@ -32,82 +50,86 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _usernameText, value);
         }
 
-        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService )
+        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
         {
+            
             _alertService = alertService;
             _pageService = pageService;
+            _flyoutVm = flyoutVm;
+            LoggedIn = false;
+            SignedOut = true;
             RegisterCommand = new CommandBuilder().SetExecuteAsync(RegisterExecute).Build();
             LoginCommand = new CommandBuilder().SetExecuteAsync(LoginExecute).Build();
+            SignoutCommand = new CommandBuilder().SetExecuteAsync(SignoutExecute).Build();
         }
 
-        
+        public async Task SignoutExecute()
+        {
+            await _alertService.DisplayAlertAsync("Success", "You Have Signed Out", "Ok");
+            SignedOut = true;
+            LoggedIn = false;
+            AccountDetails = null;
+        }
 
         public async Task RegisterExecute()
         {
             SqlDataReader reader;
-            SqlCommand command;
-            string queryString;
+            SqlCommand command = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            SqlConnection connection = new SqlConnection(connectionString);
+            //Check account is made
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
             {
-                //Check account is made
-                SqlConnection sqlConnection = new SqlConnection();
-                SqlCommand sqlCommand = new SqlCommand();
-                sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
-                sqlConnection.Open();
-                sqlCommand.Connection = sqlConnection;
-                sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-                SqlDataReader dr = sqlCommand.ExecuteReader();
-                if (dr.Read())
-                {
  
-                    if (UsernameText == dr["username"].ToString().Trim())
-                    {
-                        await _alertService.DisplayAlertAsync("Success", "Username Already Exists", "Ok");
-                    }
+                if (UsernameText == dr["username"].ToString().Trim())
+                {
+                    await _alertService.DisplayAlertAsync("Success", "Username Already Exists", "Ok");
                     
+                }
+                dr.Close();
+            }
+            else
+            {
+                connection.Close();
+                connection.Open();
+
+                // create account
+                command.CommandText = $"INSERT INTO[dbo].[LoginTable] (username, password) VALUES('{UsernameText}', '{PasswordText}')";
+                command.ExecuteReader();
+
+                connection.Close();
+                connection.Open();
+
+
+                //Check account is made
+                command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
+                reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (UsernameText == reader["username"].ToString().Trim())
+                    {
+                        await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
+                    }
                 }
                 else
                 {
-
-                    // create account
-                    queryString = $"INSERT INTO[dbo].[LoginTable] (username, password) VALUES('{UsernameText}', '{PasswordText}')";
-                    command = new SqlCommand(queryString, connection);
-
-                    connection.Open();
-                    reader = command.ExecuteReader();
-                    reader.Close();
-
-                    //Check account is made
-                    queryString = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-                    command = new SqlCommand(queryString, connection);
-                    reader = command.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        if (UsernameText == reader["username"].ToString().Trim())
-                        {
-                            await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
-                        }
-                    }
-                    else
-                    {
-                        await _alertService.DisplayAlertAsync("Success", "Account creation failed", "Ok");
-                    }
-
-                    connection.Close();
+                    await _alertService.DisplayAlertAsync("Success", "Account creation failed", "Ok");
                 }
-                sqlConnection.Close();
-
-
-
+                dr.Close();
 
             }
+            connection.Close();
+
 
             return;
         }
         public async Task LoginExecute()
         {
+            AccountDetails = new AccountDetailsModel();
             SqlConnection sqlConnection = new SqlConnection();
             SqlCommand sqlCommand = new SqlCommand();
             sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
@@ -117,10 +139,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SqlDataReader dr = sqlCommand.ExecuteReader();
             if (dr.Read())
             {
-                string yes = dr["username"].ToString();
                 if (UsernameText == dr["username"].ToString().Trim() && PasswordText == dr["password"].ToString().Trim())
                 {
-                     await _alertService.DisplayAlertAsync("Success", "You have logged in Successfully", "Ok");
+                    AccountDetails.Id = Convert.ToInt32(dr["id"]);
+                    AccountDetails.ProfileName = dr["profile_name"].ToString().Trim();
+                    AccountDetails.ProfileDescription = dr["profile_description"].ToString().Trim();
+                    _flyoutVm.PullAccountDetails(AccountDetails);
+                    await _alertService.DisplayAlertAsync("Success", "You have logged in Successfully", "Ok");
+                    SignedOut = false;
+                    LoggedIn = true;
                 }
                 else
                 {
@@ -131,7 +158,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             return;
 
         }
-     
+
+      
 
     }
 }
