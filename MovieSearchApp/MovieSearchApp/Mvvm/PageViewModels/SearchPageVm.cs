@@ -178,7 +178,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             pageCounter = 1;
             List<MovieModel> searchResult = new List<MovieModel>();
             currentSearch = SearchText;
-            await SearchMovies();
+            await SearchMoviesAndUpdateDisplay();
             currentlySelectedFilter = SelectedFilter;
             return pageCounter;
 
@@ -204,7 +204,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 if (SearchText != null)
                 {
 
-                  await SearchMovies();
+                  await SearchMoviesAndUpdateDisplay();
 
                 }
                else
@@ -247,17 +247,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 else
                 {
 
-                    await SearchMovies();
+                    await SearchMoviesAndUpdateDisplay();
 
                 }
             }
 
-
             Display = null;
         }
 
+
         //function that searches movies, used in above methods, cuts repetition
-        public async Task SearchMovies()
+        public async Task SearchMoviesAndUpdateDisplay()
         {
             ScoresDetailsList.Clear();
             switch (SelectedFilter.Filter)

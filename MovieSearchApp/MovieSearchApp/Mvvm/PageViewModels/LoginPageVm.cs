@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Npgsql;
+using System.Configuration;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -47,14 +47,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SqlDataReader reader;
             SqlCommand command;
             string queryString;
-            string connectionString = "Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
+            //string connectionString = "Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
+            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 //Check account is made
                 SqlConnection sqlConnection = new SqlConnection();
                 SqlCommand sqlCommand = new SqlCommand();
-                sqlConnection.ConnectionString = @"Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
+                sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
                 sqlConnection.Open();
                 sqlCommand.Connection = sqlConnection;
                 sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
@@ -110,7 +111,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             SqlConnection sqlConnection = new SqlConnection();
             SqlCommand sqlCommand = new SqlCommand();
-            sqlConnection.ConnectionString = @"Data Source=moviesearchapp.database.windows.net;Initial Catalog=userDB;User ID=yuoopwe;Password=BeeliveryBoys001";
+            sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             sqlConnection.Open();
             sqlCommand.Connection = sqlConnection;
             sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
