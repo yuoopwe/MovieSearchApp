@@ -53,9 +53,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<GenreCheckbox>(Lifestyle.Singleton);
 			_IoCC.Register<TrailerPage>(Lifestyle.Singleton);
 			_IoCC.Register<LoginPage>(Lifestyle.Singleton);
-
-
-
+			_IoCC.Register<ProfilePage>(Lifestyle.Singleton);
 
 
 			// Tell the IoC container about our ViewModels.
@@ -67,6 +65,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<GenreCheckboxVm>(Lifestyle.Singleton);
 			_IoCC.Register<TrailerPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<LoginPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<ProfilePageVm>(Lifestyle.Singleton);
+
 
 
 
