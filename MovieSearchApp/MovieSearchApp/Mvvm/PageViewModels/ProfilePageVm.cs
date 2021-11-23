@@ -70,7 +70,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
 
         }
-        public void init(AccountDetailsModel accountDetails)
+        public void Init(AccountDetailsModel accountDetails)
         {
 
             AccountDetails = accountDetails;

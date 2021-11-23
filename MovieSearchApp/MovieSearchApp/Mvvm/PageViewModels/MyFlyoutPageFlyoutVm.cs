@@ -92,7 +92,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 await _pageService.PopToRootAsync();
-                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.init(AccountDetails));
+                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.Init(AccountDetails));
             }
             
         }
@@ -115,7 +115,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 await _pageService.PopToRootAsync();
-                await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => { });
+                await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList));
             }
            
         }

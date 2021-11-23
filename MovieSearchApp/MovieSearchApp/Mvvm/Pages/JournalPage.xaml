@@ -3,10 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.JournalPage">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding JournalDetailsList}" BackgroundColor="#2E333A" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="20,20,20,20" ColumnDefinitions="Auto,*">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100" Padding="5,0,5,0" Grid.Column="1">
+                                <Label Text="Title" Grid.Row="0"  HorizontalOptions="Start" FontSize="20" TextColor="LightBlue"/>
+                                <Label Text="{Binding MovieTitle}" TextColor="FloralWhite" Grid.Row="1"/>
+                                <Label Text="Comments" Grid.Row="2" FontSize="20" TextColor="LightBlue"/>
+                                <Label Text="{Binding MovieComments}" TextColor="FloralWhite" Grid.Row ="3"/>
+                                <Label Text="Rating" FontSize="20" TextColor="LightBlue" Grid.Row="4"/>
+                                <Label Text="{Binding MovieRating}" FontSize="20" TextColor="FloralWhite" Grid.Row="5"/>
+                            </Grid>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </ContentPage.Content>
 </ContentPage>

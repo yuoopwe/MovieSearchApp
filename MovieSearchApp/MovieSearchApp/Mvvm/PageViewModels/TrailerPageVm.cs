@@ -45,7 +45,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(DetailsModel));
         }
 
-        public void init(Result model, MovieDetailsModel detailsModel)
+        public void Init(Result model, MovieDetailsModel detailsModel)
         {
             Display = model;
             DetailsModel = detailsModel;

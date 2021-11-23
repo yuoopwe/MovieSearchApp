@@ -142,7 +142,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             JournalDetailsList = new List<JournalDetailsModel>();
             AccountDetails = new AccountDetailsModel();
-            JournalDetails = new JournalDetailsModel();
             SqlConnection connection = new SqlConnection();
             SqlCommand command = new SqlCommand();
             connection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
@@ -164,12 +163,14 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     dr = command.ExecuteReader();
                     while (dr.Read())
                     {
+                        JournalDetails = new JournalDetailsModel();
                         JournalDetails.MovieID = (string)dr["MovieID"];
                         JournalDetails.MovieTitle = (string)dr["MovieTitle"];
                         JournalDetails.MovieRating = (string)dr["MovieRating"];
                         JournalDetails.MovieComments = (string)dr["MovieComments"];
                         JournalDetails.MovieRuntime = (string)dr["MovieRuntime"];
                         JournalDetailsList.Add(JournalDetails);
+                        
 
                     }
                     _flyoutVm.SetAccountDetails(AccountDetails, JournalDetailsList);

@@ -61,7 +61,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 if(RecommendationResult.Similar.Results[i].Name == Display.Title)
                 {
-                    await _pageService.PushPageAsync<TrailerPage, TrailerPageVm>((vm) => vm.init(RecommendationResult.Similar.Results[i], Display));
+                    await _pageService.PushPageAsync<TrailerPage, TrailerPageVm>((vm) => vm.Init(RecommendationResult.Similar.Results[i], Display));
                     break;
                 }
             }
