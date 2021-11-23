@@ -72,6 +72,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Mvvm\Pages\AddToListPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Mvvm\Pages\EditJournalItemPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Mvvm\Pages\JournalPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

@@ -32,15 +32,9 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<IPageServiceZero>(
 				() =>
 				{
-					// This is how we create an instance of PageServiceZero.
-					// The PageService needs to know how to get the current NavigationPage it is to interact with.
-					// (If you have a FlyoutPage at the root, the navigationGetter should return the current Detail item)
-					// It also needs to know how to get Page and ViewModel instances so we provide it with a factory
-					// that uses the IoC container. We could easily provide any sort of factory, we don't need to use an IoC container.
 					var pageService = new PageServiceZero(() => ((FlyoutPage)App.Current.MainPage).Detail.Navigation, (theType) => _IoCC.GetInstance(theType));
 					return pageService;                   //() => App.Current.MainPage.Navigation   
 				},
-				// One only ever will be created.
 				Lifestyle.Singleton
 			);
 
@@ -56,6 +50,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<ProfilePage>(Lifestyle.Singleton);
 			_IoCC.Register<JournalPage>(Lifestyle.Singleton);
 			_IoCC.Register<SettingsPage>(Lifestyle.Singleton);
+			_IoCC.Register<AddToListPage>(Lifestyle.Singleton);
+
 
 
 
@@ -72,6 +68,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<ProfilePageVm>(Lifestyle.Singleton);
 			_IoCC.Register<JournalPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<SettingsPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<AddToListPageVm>(Lifestyle.Singleton);
+
 
 
 
@@ -85,24 +83,6 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
 			_IoCC.Register<ThemoviedbService>(GetTheMovieDbService, Lifestyle.Singleton);
 			
-
-
-
-			// Optionally add more to the IoC conatainer, e.g. loggers, Http comms objects etc. E.g.
-			// IoCC.Register<ILogger, MyLovelyLogger>(Lifestyle.Singleton);
-		}
-
-		private INavigation GetNavigationPage()
-		{
-			// => App.Current.MainPage.Navigation
-			var flyout = (FlyoutPage)App.Current.MainPage.Navigation;
-
-
-			var currentPage = flyout;
-
-			var navPage = (INavigation)currentPage;
-
-			return navPage;
 
 
 		}
@@ -134,17 +114,8 @@ namespace MovieSearchApp.Boilerplate
 
 
 
-		/// <summary>
-		/// This is called once during application startup
-		/// </summary>
 		internal async Task SetFirstPage()
 		{
-			// Create and assign a top-level NavigationPage.
-			// If you use a FlyoutPage instead then its Detail item will need to be a NavigationPage
-			// and you will need to modify the 'navigationGetter' provided to the PageServiceZero instance to 
-			// something like this:
-			// () => ((FlyoutPage)App.Current.MainPage).Detail.Navigation
-
 		
 			var pageService = _IoCC.GetInstance<IPageServiceZero>();
 
@@ -154,14 +125,11 @@ namespace MovieSearchApp.Boilerplate
 
 			flyout.Flyout = flyoutPageFlyout;
 
-
-		
 			var navPage = new NavigationPage();
+
 			flyout.Detail = navPage;
+
 			App.Current.MainPage = flyout;
-
-			// App.Current.MainPage = new NavigationPage();
-
 			
 			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
 
@@ -169,13 +137,6 @@ namespace MovieSearchApp.Boilerplate
 
 
 
-		/// <summary>
-		/// For debug purposes to let us know when a Page is assembled by the PageService
-		/// </summary>
-		/// <param name="thePage">A reference to the page that has been presented</param>
-		private void PageCreated(Page thePage)
-		{
-			Debug.WriteLine(thePage);
-		}
+
 	}
 }

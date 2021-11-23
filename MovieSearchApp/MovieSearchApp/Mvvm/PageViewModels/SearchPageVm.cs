@@ -16,11 +16,17 @@ using Xamarin.Essentials;
 using System.Linq;
 using MovieSearchApp.Models.Tastedive;
 using Xamarin.Forms;
+using MovieSearchApp.Models;
+using MovieSearchApp.Models.UserAccount;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class SearchPageVm : MvvmZeroBaseVm
     {
+        public AccountDetailsModel AccountDetails { get; set; }
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
+
+
         public int pageCounter
         {
             get => _pagecounter;
@@ -32,7 +38,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand SearchCommand { get; }
         public ICommand GetDetailsCommand { get; }
         public ICommand GetRecommendationsCommand { get; }
-        public ICommand GetDetailsCommandTest { get; }
+        public ICommand AddToListCommand { get; }
        
         public MovieDetailsModel item { get; set; }
 
@@ -53,10 +59,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private PickerModel currentlySelectedFilter { get; set; }
 
         public IList<PickerModel> FilterList { get; set; }
-        public ObservableCollection<MovieDetailsModel> MovieDetailsList
+        public ObservableCollection<MovieDetailsModel> MovieObjectList
         {
-            get => _movieDetailsList;
-            set => SetProperty(ref _movieDetailsList, value);
+            get => _movieObjectList;
+            set => SetProperty(ref _movieObjectList, value);
         }
         public List<MovieModel> SearchResult
         {
@@ -79,7 +85,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
 
         public RecommendationModel RecommendationResult;
-        private ObservableCollection<MovieDetailsModel> _movieDetailsList;
+        private ObservableCollection<MovieDetailsModel> _movieObjectList;
 
         public MovieDetailsModel DetailsResult
         {
@@ -111,7 +117,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _omdbService = omdbService;
             _pageService = pageService;
             _alertService = alertService;
-
+            AccountDetails = new AccountDetailsModel();
+            JournalDetailsList = new List<JournalDetailsModel>();
+            AccountDetails.IsLoggedIn = false;
             FilterList = new List<PickerModel>(new[]
             {
                     new PickerModel {Filter = "Search All" },
@@ -124,9 +132,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SelectedFilter = FilterList[0];
             currentlySelectedFilter = SelectedFilter;
             //must be observable collection to access it from xaml
-            MovieDetailsList = new ObservableCollection<MovieDetailsModel>();
+            MovieObjectList = new ObservableCollection<MovieDetailsModel>();
 
-
+            AddToListCommand = new CommandBuilder().SetExecuteAsync(AddToListExecute).Build();
             GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetDetailsExecute).Build();
             GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
             SearchNextPageCommand = new CommandBuilder().SetExecuteAsync(GetNextPageExecute).Build();
@@ -136,10 +144,41 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
-        public async Task GetDetailsExecute(object item)
+        public async Task AddToListExecute(object item1)
+        {
+            bool filmIsInList = false;
+            if (AccountDetails.IsLoggedIn == true)
+            {
+                MovieDetailsModel item2 = item1 as MovieDetailsModel;
+                foreach (var item in JournalDetailsList)
+                {
+                    if (item.MovieTitle == item2.Title)
+                    {
+                        filmIsInList = true;
+                    }
+                }
+                if (filmIsInList == true)
+                {
+                    await _alertService.DisplayAlertAsync("Message", "You have already added this film to your list", "Ok");
+
+                }
+                else
+                {
+                    await _pageService.PushPageAsync<AddToListPage, AddToListPageVm>((vm) => vm.Init(item2, JournalDetailsList, AccountDetails, "Search"));
+                }
+            }
+            else
+            {
+                await _alertService.DisplayAlertAsync("Message", "You must login to access this feature", "Ok");
+
+            }
+
+        }
+
+        public async Task GetDetailsExecute(object item1)
         {
 
-            MovieDetailsModel item2 = item as MovieDetailsModel;
+            MovieDetailsModel item2 = item1 as MovieDetailsModel;
             var movieId = item2.imdbID;
             MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
             await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
@@ -149,9 +188,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
        
 
         //function that controls getting recommendations and bringing us to this page
-        public async Task GetRecommendationsExecute(object item)
+        public async Task GetRecommendationsExecute(object item1)
         {
-            MovieDetailsModel item2 = item as MovieDetailsModel;
+            MovieDetailsModel item2 = item1 as MovieDetailsModel;
             string type;
             switch (item2.Type)
             {
@@ -172,7 +211,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
             RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(item2.Title), type );
             RecommendationResult = recommendationResult;
-            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult));
+            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult, AccountDetails, JournalDetailsList));
         }
 
 
@@ -264,7 +303,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         //function that searches movies, used in above methods, cuts repetition
         public async Task SearchMoviesAndUpdateDisplay()
         {
-            MovieDetailsList.Clear();
+            MovieObjectList.Clear();
             switch (SelectedFilter.Filter)
             {
                 case "Search TV Shows":
@@ -320,10 +359,20 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                
                 MovieDetailsModel result2 = await _omdbService.GetMovieDetailsWithIdAsync(item.imdbID);
-                MovieDetailsList.Add(result2);
+                MovieObjectList.Add(result2);
 
             }
 
+        }
+
+        public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalList )
+        {
+            if (accountDetails.IsLoggedIn == true)
+            {
+                AccountDetails = accountDetails;
+                JournalDetailsList = journalList;
+            }
+           
         }
 
         

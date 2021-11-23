@@ -1,6 +1,7 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
+using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _profileNameText, value);
         }
         public AccountDetailsModel AccountDetails { get; set; }
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
+
         public ICommand ChangeProfileNameCommand { get; }
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService)
@@ -70,12 +73,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
 
         }
-        public void Init(AccountDetailsModel accountDetails)
+        public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
         {
 
             AccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
+            JournalDetailsList = journalDetails;
         }
 
     }

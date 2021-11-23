@@ -27,7 +27,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public IAlertService _alertService;
         public ImageSource tgBtn { get; set; }
         private FlyoutMenuModel _selectedDetailItem;
-        private AccountDetailsModel AccountDetails { get; set; }
+        public AccountDetailsModel AccountDetails { get; set; }
         public List<JournalDetailsModel> JournalDetailsList { get; set; }
         public FlyoutMenuModel SelectedDetailItem { get => _selectedDetailItem; 
             set
@@ -62,6 +62,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             JournalPageCommand = new CommandBuilder().SetExecuteAsync(JournalPageExecute).Build();
             SettingsPageCommand = new CommandBuilder().SetExecuteAsync(SettingsPageExecute).Build();
 
+            AccountDetails = new AccountDetailsModel();
+            AccountDetails.IsLoggedIn = false;
+
 
             tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
             MenuItems = new ObservableCollection<FlyoutMenuModel>(new[]
@@ -80,26 +83,26 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task SearchPageExecute()
         {
             await _pageService.PopToRootAsync();
-            await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
+            await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
         }
 
         public async Task ProfilePageExecute()
         {
-            if( AccountDetails == null)
+            if (AccountDetails.IsLoggedIn == false)
             {
                 await _alertService.DisplayAlertAsync("Not Logged In", "You must login to access this page", "Ok");
             }
             else
             {
                 await _pageService.PopToRootAsync();
-                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.Init(AccountDetails));
+                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
             }
             
         }
         public async Task PopularPageExecute()
         {
             await _pageService.PopToRootAsync();
-            await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) => { });
+            await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) =>  vm.Init(AccountDetails, JournalDetailsList) );
         }
         public async Task SettingsPageExecute()
         {
@@ -108,14 +111,14 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public async Task JournalPageExecute()
         {
-            if ( AccountDetails == null)
+            if ( AccountDetails.IsLoggedIn == false)
             {
                 await _alertService.DisplayAlertAsync("Not Logged In", "You must login to access this page", "Ok");
             }
             else
             {
                 await _pageService.PopToRootAsync();
-                await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList));
+                await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList, AccountDetails));
             }
            
         }

@@ -6,12 +6,12 @@
         <Grid Padding="5,0,5,0" RowDefinitions="Auto, *, Auto,Auto"  BackgroundColor="LightSlateGray" >
             <Label Grid.Row="0" Text="Movie Recommendations!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20"/>
             <StackLayout Grid.Row="1">
-                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieObjectList}" BackgroundColor="#2E333A" >
+                <ListView x:Name="ItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieObjectList}" BackgroundColor="#2E333A" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Grid Padding="20,20,20,20" ColumnDefinitions="Auto,*">
-                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100" Padding="5,0,5,0" Grid.Column="1">
+                                <Grid x:Name="Item" Padding="20,20,20,20" ColumnDefinitions="Auto,*">
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100,Auto" Padding="5,0,5,0" Grid.Column="1">
                                         <Label Text="Title" Grid.Row="0"  HorizontalOptions="Start" FontSize="20" TextColor="LightBlue"/>
                                         <Label Text="{Binding Title}" TextColor="FloralWhite" Grid.Row="1"/>
                                         <Label Text="Release date" Grid.Row="2" FontSize="20" TextColor="LightBlue"/>
@@ -22,7 +22,6 @@
                                                 <DataTemplate>
                                                     <ViewCell>
                                                         <Grid ColumnDefinitions="Auto,Auto">
-
                                                             <Label Text="{Binding Source}" Grid.Column="0" TextColor="FloralWhite"/>
                                                             <Label Text="{Binding Value}" Grid.Column="1" TextColor="FloralWhite"/>
                                                         </Grid>
@@ -30,6 +29,11 @@
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
+                                        <Grid Grid.Row="6" Padding="5,5,5,5" ColumnDefinitions="*,*,*">
+                                            <Button Grid.Column="0" Text="Get Details" BackgroundColor="White" BindingContext="{Binding Source={x:Reference ItemList}, Path=BindingContext}" Command="{Binding GetDetailsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                            <Button Grid.Column="1" Text="Show Trailer" BackgroundColor="White" BindingContext="{Binding Source={x:Reference ItemList}, Path=BindingContext}" Command="{Binding ShowTrailerCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                            <Button Grid.Column="2" Text="Add To List" BackgroundColor="White" BindingContext="{Binding Source={x:Reference ItemList}, Path=BindingContext}" Command="{Binding AddToListCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                        </Grid>
                                     </Grid>
                                     <Image Source="{Binding Poster}" WidthRequest="210" HeightRequest="300" Grid.Column ="0"/>
                                 </Grid>
@@ -38,8 +42,6 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <Button Grid.Row="2" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="White"/>
-            <Button Grid.Row="3" Text="Watch The Trailer" Command="{Binding ShowTrailerCommand}" BackgroundColor="#2E333A" TextColor="White"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

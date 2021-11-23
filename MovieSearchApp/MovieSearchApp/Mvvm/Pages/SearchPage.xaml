@@ -14,7 +14,7 @@
                 <Button Text="Search" Command="{Binding SearchCommand}" Grid.Column="1" BackgroundColor="#2E333A" TextColor="White"/>
             </Grid>
             <StackLayout Grid.Row="3">
-                <ListView x:Name="SearchItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieDetailsList}" BackgroundColor="#2E333A" >
+                <ListView x:Name="SearchItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieObjectList}" BackgroundColor="#2E333A" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -30,7 +30,6 @@
                                                 <DataTemplate>
                                                     <ViewCell>
                                                         <Grid ColumnDefinitions="Auto,Auto">
-
                                                             <Label Text="{Binding Source}" Grid.Column="0" TextColor="FloralWhite"/>
                                                             <Label Text="{Binding Value}" Grid.Column="1" TextColor="FloralWhite"/>
                                                         </Grid>
@@ -41,7 +40,7 @@
                                         <Grid Grid.Row="6" Padding="5,5,5,5" ColumnDefinitions="*,*,*">
                                             <Button Grid.Column="0" Text="Get Details" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding GetDetailsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
                                             <Button Grid.Column="1" Text="Get Recommendations" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding GetRecommendationsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
-                                            <Button Grid.Column="2" Text="Add To List" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding AddToListCommandTest}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                            <Button Grid.Column="2" Text="Add To List" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding AddToListCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
                                         </Grid>
                                     </Grid>
                                     <Image Source="{Binding Poster}" WidthRequest="210" HeightRequest="300" Grid.Column ="0"/>

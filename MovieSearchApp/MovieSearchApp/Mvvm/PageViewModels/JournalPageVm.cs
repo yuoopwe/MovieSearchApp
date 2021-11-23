@@ -1,9 +1,17 @@
-﻿using FunctionZero.MvvmZero;
+﻿using FunctionZero.CommandZero;
+using FunctionZero.MvvmZero;
+using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
+using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -13,6 +21,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private IPageServiceZero _pageService;
         private MyFlyoutPageFlyoutVm _flyoutVm;
         private List<JournalDetailsModel> _journalDetailsList;
+
+
+        public ICommand DeleteItemCommand { get; }
+        public ICommand EditItemCommand { get; }
+        public AccountDetailsModel AccountDetails { get; set; }
+
 
         public List<JournalDetailsModel> JournalDetailsList
         {
@@ -28,12 +42,42 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             _flyoutVm = flyoutVm;
 
+            DeleteItemCommand = new CommandBuilder().SetExecuteAsync(DeleteItemExecute).Build();
+            EditItemCommand = new CommandBuilder().SetExecuteAsync(EditItemExecute).Build();
+
+
         }
 
-        public void Init(List<JournalDetailsModel> JournalList)
+        public async Task EditItemExecute(object item1)
         {
-            JournalDetailsList = JournalList;
+            JournalDetailsModel item2 = item1 as JournalDetailsModel;
 
+        }
+
+        public async  Task DeleteItemExecute(object item1)
+        {
+            JournalDetailsModel item2 = item1 as JournalDetailsModel;
+            SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"DELETE FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID='{item2.MovieID}';";
+            command.ExecuteReader();
+            var itemToRemove = JournalDetailsList.Single(r => r.MovieID == item2.MovieID);
+            JournalDetailsList.Remove(itemToRemove);
+            _flyoutVm.SetAccountDetails(AccountDetails, JournalDetailsList);
+            await _alertService.DisplayAlertAsync("Message", "Item deleted successfully", "Ok");
+            await _pageService.PopToRootAsync();
+            await _pageService.PushPageAsync<JournalPage, JournalPageVm>(vm => { });
+
+        }
+
+        public void Init(List<JournalDetailsModel> journalList, AccountDetailsModel accountDetails)
+        {
+            JournalDetailsList = journalList;
+            AccountDetails = accountDetails;
 
         }
 
