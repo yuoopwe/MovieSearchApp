@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Configuration;
 using MovieSearchApp.Models;
+using MovieSearchApp.Models.UserAccount;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -35,6 +36,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _signedOut, value);
         }
         public AccountDetailsModel AccountDetails { get; set; }
+        public JournalDetailsModel JournalDetails { get; set; }
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
+
+
         public ICommand RegisterCommand { get; }
         public ICommand LoginCommand { get; }
         public ICommand SignoutCommand { get; }
@@ -69,6 +74,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SignedOut = true;
             LoggedIn = false;
             AccountDetails = null;
+            JournalDetailsList = null;
+            _flyoutVm.SetAccountDetails(AccountDetails, JournalDetailsList);
         }
 
         public async Task RegisterExecute()
@@ -133,7 +140,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public async Task LoginExecute()
         {
+            JournalDetailsList = new List<JournalDetailsModel>();
             AccountDetails = new AccountDetailsModel();
+            JournalDetails = new JournalDetailsModel();
             SqlConnection connection = new SqlConnection();
             SqlCommand command = new SqlCommand();
             connection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
@@ -148,7 +157,22 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     AccountDetails.Id = Convert.ToInt32(dr["id"]);
                     AccountDetails.ProfileName = dr["profile_name"].ToString().Trim();
                     AccountDetails.ProfileDescription = dr["profile_description"].ToString().Trim();
-                    _flyoutVm.SetAccountDetails(AccountDetails);
+                    dr.Close();
+                    connection.Close();
+                    connection.Open();
+                    command.CommandText = $"Select * from dbo.{UsernameText}Journal";
+                    dr = command.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        JournalDetails.MovieID = (string)dr["MovieID"];
+                        JournalDetails.MovieTitle = (string)dr["MovieTitle"];
+                        JournalDetails.MovieRating = (string)dr["MovieRating"];
+                        JournalDetails.MovieComments = (string)dr["MovieComments"];
+                        JournalDetails.MovieRuntime = (string)dr["MovieRuntime"];
+                        JournalDetailsList.Add(JournalDetails);
+
+                    }
+                    _flyoutVm.SetAccountDetails(AccountDetails, JournalDetailsList);
                     await _alertService.DisplayAlertAsync("Success", "You have logged in Successfully", "Ok");
                     SignedOut = false;
                     LoggedIn = true;

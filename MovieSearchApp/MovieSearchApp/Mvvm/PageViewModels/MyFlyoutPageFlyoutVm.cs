@@ -1,6 +1,7 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
+using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Mvvm.Pages.PopularPage;
 using MovieSearchApp.Mvvm.PageViewModels;
@@ -27,6 +28,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ImageSource tgBtn { get; set; }
         private FlyoutMenuModel _selectedDetailItem;
         private AccountDetailsModel AccountDetails { get; set; }
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
         public FlyoutMenuModel SelectedDetailItem { get => _selectedDetailItem; 
             set
             {
@@ -83,8 +85,16 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task ProfilePageExecute()
         {
-            await _pageService.PopToRootAsync();
-            await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.init(AccountDetails));
+            if( AccountDetails == null)
+            {
+                await _alertService.DisplayAlertAsync("Not Logged In", "You must login to access this page", "Ok");
+            }
+            else
+            {
+                await _pageService.PopToRootAsync();
+                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.init(AccountDetails));
+            }
+            
         }
         public async Task PopularPageExecute()
         {
@@ -98,8 +108,16 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public async Task JournalPageExecute()
         {
-            await _pageService.PopToRootAsync();
-            await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => { });
+            if ( AccountDetails == null)
+            {
+                await _alertService.DisplayAlertAsync("Not Logged In", "You must login to access this page", "Ok");
+            }
+            else
+            {
+                await _pageService.PopToRootAsync();
+                await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => { });
+            }
+           
         }
 
         public async Task LoginPageExecute()
@@ -121,10 +139,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
         }
 
-        public void SetAccountDetails(AccountDetailsModel AccountDetail)
+        public void SetAccountDetails(AccountDetailsModel AccountDetail, List<JournalDetailsModel> JournalList)
         {
             AccountDetails = AccountDetail;
-
+            JournalDetailsList = JournalList;
         }
 
     }
