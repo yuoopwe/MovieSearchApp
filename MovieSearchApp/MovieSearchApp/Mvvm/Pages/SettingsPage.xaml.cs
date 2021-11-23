@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace MovieSearchApp.Mvvm.Pages
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MyFlyoutPageDetail : ContentPage
+    public partial class SettingsPage : ContentPage
     {
-        public MyFlyoutPageDetail()
+        public SettingsPage()
         {
             InitializeComponent();
         }

@@ -87,7 +87,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
  
                 if (UsernameText == dr["username"].ToString().Trim())
                 {
-                    await _alertService.DisplayAlertAsync("Success", "Username Already Exists", "Ok");
+                    await _alertService.DisplayAlertAsync("Failure", "Username Already Exists", "Ok");
                     
                 }
                 dr.Close();
@@ -112,6 +112,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 {
                     if (UsernameText == reader["username"].ToString().Trim())
                     {
+                        connection.Close();
+                        connection.Open();
+                        command.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255), MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255));";
+                        command.ExecuteReader();
                         await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
                     }
                 }
@@ -130,13 +134,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task LoginExecute()
         {
             AccountDetails = new AccountDetailsModel();
-            SqlConnection sqlConnection = new SqlConnection();
-            SqlCommand sqlCommand = new SqlCommand();
-            sqlConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
-            sqlConnection.Open();
-            sqlCommand.Connection = sqlConnection;
-            sqlCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-            SqlDataReader dr = sqlCommand.ExecuteReader();
+            SqlConnection connection = new SqlConnection();
+            SqlCommand command = new SqlCommand();
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
+            SqlDataReader dr = command.ExecuteReader();
             if (dr.Read())
             {
                 if (UsernameText == dr["username"].ToString().Trim() && PasswordText == dr["password"].ToString().Trim())
@@ -144,7 +148,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     AccountDetails.Id = Convert.ToInt32(dr["id"]);
                     AccountDetails.ProfileName = dr["profile_name"].ToString().Trim();
                     AccountDetails.ProfileDescription = dr["profile_description"].ToString().Trim();
-                    _flyoutVm.PullAccountDetails(AccountDetails);
+                    _flyoutVm.SetAccountDetails(AccountDetails);
                     await _alertService.DisplayAlertAsync("Success", "You have logged in Successfully", "Ok");
                     SignedOut = false;
                     LoggedIn = true;
@@ -154,7 +158,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                  await _alertService.DisplayAlertAsync("Success", "Login failed, please try again", "Ok");
                 }
             }
-            sqlConnection.Close();
+            connection.Close();
             return;
 
         }
