@@ -96,7 +96,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SettingsPage, SettingsPageVm>((vm) => { });
         }
-        public async Task JournalPageExecuted()
+        public async Task JournalPageExecute()
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => { });
