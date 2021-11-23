@@ -15,6 +15,7 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using System.Linq;
 using MovieSearchApp.Models.Tastedive;
+using Xamarin.Forms;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -31,6 +32,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand SearchCommand { get; }
         public ICommand GetDetailsCommand { get; }
         public ICommand GetRecommendationsCommand { get; }
+        public ICommand GetDetailsCommandTest { get; }
+       
+        public MovieDetailsModel item { get; set; }
+
+
 
         public MovieCollectionModel result;
         public readonly IAlertService _alertService;
@@ -47,10 +53,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private PickerModel currentlySelectedFilter { get; set; }
 
         public IList<PickerModel> FilterList { get; set; }
-        public ObservableCollection<MovieDetailsModel> ScoresDetailsList
+        public ObservableCollection<MovieDetailsModel> MovieDetailsList
         {
-            get => _scoresDetailsList;
-            set => SetProperty(ref _scoresDetailsList, value);
+            get => _movieDetailsList;
+            set => SetProperty(ref _movieDetailsList, value);
         }
         public List<MovieModel> SearchResult
         {
@@ -58,6 +64,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _searchResult, value);
         }
 
+        public MovieDetailsModel itemn { get; set; }
         public PickerModel SelectedFilter
         {
             get => _selectedFilter;
@@ -72,7 +79,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
 
         public RecommendationModel RecommendationResult;
-        private ObservableCollection<MovieDetailsModel> _scoresDetailsList;
+        private ObservableCollection<MovieDetailsModel> _movieDetailsList;
 
         public MovieDetailsModel DetailsResult
         {
@@ -117,21 +124,36 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SelectedFilter = FilterList[0];
             currentlySelectedFilter = SelectedFilter;
             //must be observable collection to access it from xaml
-            ScoresDetailsList = new ObservableCollection<MovieDetailsModel>();
+            MovieDetailsList = new ObservableCollection<MovieDetailsModel>();
 
+
+            GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetDetailsExecute).Build();
             GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
             SearchNextPageCommand = new CommandBuilder().SetExecuteAsync(GetNextPageExecute).Build();
             SearchPreviousPageCommand = new CommandBuilder().SetExecuteAsync(GetPreviousPageExecute).Build();
             SearchCommand = new CommandBuilder().SetExecuteAsync(SearchCommandExecute).Build();
-            GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetMovieDetailsExecute).Build();
+
 
         }
 
-        //function that controls getting recommendations and bringing us to this page
-        public async Task GetRecommendationsExecute()
+        public async Task GetDetailsExecute(object item)
         {
+
+            MovieDetailsModel item2 = item as MovieDetailsModel;
+            var movieId = item2.imdbID;
+            MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
+            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
+            DetailsResult = detailsResult;
+            
+        }
+       
+
+        //function that controls getting recommendations and bringing us to this page
+        public async Task GetRecommendationsExecute(object item)
+        {
+            MovieDetailsModel item2 = item as MovieDetailsModel;
             string type;
-            switch (Display.Type)
+            switch (item2.Type)
             {
                 case "series":
                     type = "show:";
@@ -148,28 +170,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     break;
 
             }
-            RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(Display.Title), type );
+            RecommendationModel recommendationResult = await _tastediveService.GetRecommendationsByType(System.Web.HttpUtility.UrlPathEncode(item2.Title), type );
             RecommendationResult = recommendationResult;
             await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult));
         }
 
-        //Gets movie details and takes us to this page
-        public async Task GetMovieDetailsExecute()
-        {
-            if (Display == null)
-            {
-                await _alertService.DisplayAlertAsync("Message", "Please select a movie before searching for more details", "Ok");
-            }
-            else
-            {
-                var movieId = Display.imdbID;
-                MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
-                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
-                DetailsResult = detailsResult;
-            }
-
-
-        }
 
         
         //Searches for movies/etc. and displays on page 
@@ -259,7 +264,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         //function that searches movies, used in above methods, cuts repetition
         public async Task SearchMoviesAndUpdateDisplay()
         {
-            ScoresDetailsList.Clear();
+            MovieDetailsList.Clear();
             switch (SelectedFilter.Filter)
             {
                 case "Search TV Shows":
@@ -315,7 +320,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                
                 MovieDetailsModel result2 = await _omdbService.GetMovieDetailsWithIdAsync(item.imdbID);
-                ScoresDetailsList.Add(result2);
+                MovieDetailsList.Add(result2);
 
             }
 

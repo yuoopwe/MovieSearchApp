@@ -6,9 +6,17 @@ namespace MovieSearchApp.Models.UserAccount
 {
     class JournalDetailsModel
     {
+
         public string MovieID { get; set; }
         public string MovieTitle { get; set; }
-        public string MovieRating { get; set; }
+      
+        private string _movieRating;
+
+        public string MovieRating
+        {
+            get => _movieRating;
+            set => _movieRating = value + " / 10";
+        }
         public string MovieComments { get; set; }
         public string MovieRuntime { get; set; }
     }

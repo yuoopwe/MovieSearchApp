@@ -14,12 +14,12 @@
                 <Button Text="Search" Command="{Binding SearchCommand}" Grid.Column="1" BackgroundColor="#2E333A" TextColor="White"/>
             </Grid>
             <StackLayout Grid.Row="3">
-                <ListView SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding ScoresDetailsList}" BackgroundColor="#2E333A" >
+                <ListView x:Name="SearchItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieDetailsList}" BackgroundColor="#2E333A" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Grid Padding="20,20,20,20" ColumnDefinitions="Auto,*">
-                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100" Padding="5,0,5,0" Grid.Column="1">
+                                <Grid x:Name="Item" Padding="20,20,20,20" ColumnDefinitions="Auto,*">
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100,Auto" Padding="5,0,5,0" Grid.Column="1">
                                         <Label Text="Title" Grid.Row="0"  HorizontalOptions="Start" FontSize="20" TextColor="LightBlue"/>
                                         <Label Text="{Binding Title}" TextColor="FloralWhite" Grid.Row="1"/>
                                         <Label Text="Release date" Grid.Row="2" FontSize="20" TextColor="LightBlue"/>
@@ -38,6 +38,11 @@
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
+                                        <Grid Grid.Row="6" Padding="5,5,5,5" ColumnDefinitions="*,*,*">
+                                            <Button Grid.Column="0" Text="Get Details" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding GetDetailsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                            <Button Grid.Column="1" Text="Get Recommendations" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding GetRecommendationsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                            <Button Grid.Column="2" Text="Add To List" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchItemList}, Path=BindingContext}" Command="{Binding AddToListCommandTest}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                        </Grid>
                                     </Grid>
                                     <Image Source="{Binding Poster}" WidthRequest="210" HeightRequest="300" Grid.Column ="0"/>
                                 </Grid>
@@ -47,8 +52,8 @@
                 </ListView>
             </StackLayout>
             <Grid ColumnDefinitions="*,*" Grid.Row="4">
-                <Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
-                <Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
+                <!--Button Grid.Column="0" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/-->
+                <!--Button Grid.Column="1" Text="Get Recommendations!" Command="{Binding GetRecommendationsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/-->
             </Grid>
             <Button Grid.Row="5" HorizontalOptions="StartAndExpand" Text="Go Back!" Command="{Binding SearchPreviousPageCommand}"/>
             <Label Grid.Row="5" HorizontalOptions="Center" Text="{Binding pageCounter}"/>
