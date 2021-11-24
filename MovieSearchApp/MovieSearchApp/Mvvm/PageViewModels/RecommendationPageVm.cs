@@ -1,7 +1,9 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
+using MovieSearchApp.Models;
 using MovieSearchApp.Models.OMDb;
 using MovieSearchApp.Models.Tastedive;
+using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
@@ -16,6 +18,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class RecommendationPageVm : MvvmZeroBaseVm
     {
+        public AccountDetailsModel AccountDetails { get; set; }
+
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
 
         private RecommendationModel _recommendationResult;
         private ThemoviedbService _themoviedbService;
@@ -27,6 +32,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public ICommand GetDetailsCommand { get; }
         public ICommand ShowTrailerCommand { get; }
+        public ICommand AddToListCommand { get; }
+
         public ObservableCollection<MovieDetailsModel> MovieObjectList
         {
             get => _movieObjectList;
@@ -50,37 +57,79 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _omdbService = omdbService;
             _pageService = pageService;
             _alertService = alertService;
+            AccountDetails = new AccountDetailsModel();
+            JournalDetailsList = new List<JournalDetailsModel>();
+            AccountDetails.IsLoggedIn = false;
             MovieObjectList = new ObservableCollection<MovieDetailsModel>();
+            AddToListCommand = new CommandBuilder().SetExecuteAsync(AddToListExecute).Build();
             ShowTrailerCommand = new CommandBuilder().SetExecuteAsync(GetTrailerExecute).Build();
             GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetMovieDetailsExecute).Build();
         }
 
-        private async Task GetTrailerExecute()
+        public async Task AddToListExecute(object item1)
         {
+            bool filmIsInList = false;
+            if (AccountDetails.IsLoggedIn == true)
+            {
+                MovieDetailsModel item2 = item1 as MovieDetailsModel;
+                foreach (var item in JournalDetailsList)
+                {
+                    if (item.MovieTitle == item2.Title)
+                    {
+                        filmIsInList = true;
+                    }
+                }
+                if (filmIsInList == true)
+                {
+                   await _alertService.DisplayAlertAsync("Message", "You have already added this film to your list", "Ok");
+
+                }
+                else
+                {
+                    await _pageService.PushPageAsync<AddToListPage, AddToListPageVm>((vm) => vm.RecommendationInit(item2, JournalDetailsList, AccountDetails, "Recommendation", RecommendationResult));
+                }
+               
+            }
+            else
+            {
+                await _alertService.DisplayAlertAsync("Message", "You must login to access this feature", "Ok");
+
+            }
+
+        }
+
+        private async Task GetTrailerExecute(object items)
+        {
+            MovieDetailsModel item2 = items as MovieDetailsModel;
             for(int i=0; i < 20; i++)
             {
-                if(RecommendationResult.Similar.Results[i].Name == Display.Title)
+                if(RecommendationResult.Similar.Results[i].Name == item2.Title)
                 {
-                    await _pageService.PushPageAsync<TrailerPage, TrailerPageVm>((vm) => vm.init(RecommendationResult.Similar.Results[i], Display));
+                    await _pageService.PushPageAsync<TrailerPage, TrailerPageVm>((vm) => vm.Init(RecommendationResult.Similar.Results[i], item2));
                     break;
                 }
             }
 
         }
-        private async Task GetMovieDetailsExecute()
+        private async Task GetMovieDetailsExecute(object items)
         {
-            
-            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(Display));
+            MovieDetailsModel item2 = items as MovieDetailsModel;
+            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(item2));
         }
 
-        public async Task Init(RecommendationModel model)
+        public async Task Init(RecommendationModel model, AccountDetailsModel accountDetails, List<JournalDetailsModel> journalList)
         {
             MovieObjectList.Clear();
             RecommendationResult = model;
-            foreach (var item in model.Similar.Results)
+            foreach (var movieobject in model.Similar.Results)
             {
-                MovieDetailsModel result = await _omdbService.GetMovieDetailsWithTitleAsync(item.Name);
+                MovieDetailsModel result = await _omdbService.GetMovieDetailsWithTitleAsync(movieobject.Name);
                 MovieObjectList.Add(result);
+            }
+            if (accountDetails.IsLoggedIn == true)
+            {
+                AccountDetails = accountDetails;
+                JournalDetailsList = journalList;
             }
         }
     }

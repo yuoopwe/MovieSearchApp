@@ -4,10 +4,11 @@
              x:Class="MovieSearchApp.Mvvm.Pages.LoginPage">
     <ContentPage.Content>
         <StackLayout>
-            <Entry Placeholder="Enter username..." Text="{Binding UsernameText}"/>
-            <Entry Placeholder="Enter password..." Text="{Binding PasswordText}"/>
-            <Button Text="Register" Command="{Binding RegisterCommand}"/>
-            <Button Text="Login" Command="{Binding LoginCommand}"/>
+            <Entry Placeholder="Enter username..." Text="{Binding UsernameText}" IsVisible="{Binding SignedOut}"/>
+            <Entry Placeholder="Enter password..." Text="{Binding PasswordText}" IsVisible="{Binding SignedOut}"/>
+            <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding SignedOut}"/>
+            <Button Text="Login" Command="{Binding LoginCommand}" IsVisible="{Binding SignedOut}"/>
+            <Button Text="Sign out" Command="{Binding SignoutCommand}" IsVisible="{Binding LoggedIn}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

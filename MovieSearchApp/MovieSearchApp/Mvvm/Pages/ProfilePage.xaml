@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.ProfilePage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Profile Name" FontSize="20"/>
+            <Entry Text="{Binding ProfileNameText}"/>
+            <Button Text="Change Name" Command="{Binding ChangeProfileNameCommand}"/>
+            <Label Text="Profile Description" FontSize="20"/>
+            <Entry Text="{Binding ProfileDescriptionText}"/>
+            <Button Text="Change Description" Command="{Binding ChangeProfileDescriptionCommand}"/>
+            <Label Text="Profile Stats" FontSize="20"/>
+            <Label Text="Time Watched"/>
+            <Label Text="{Binding TotalTimeWatched}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
