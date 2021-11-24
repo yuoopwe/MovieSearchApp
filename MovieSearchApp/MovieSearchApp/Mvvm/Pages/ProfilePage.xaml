@@ -11,7 +11,7 @@
             <Entry Text="{Binding ProfileDescriptionText}"/>
             <Button Text="Change Description" Command="{Binding ChangeProfileDescriptionCommand}"/>
             <Label Text="Profile Stats" FontSize="20"/>
-            <Label Text="Time Watched"/>
+            <Label Text="Time Watched (Minutes)"/>
             <Label Text="{Binding TotalTimeWatched}"/>
         </StackLayout>
     </ContentPage.Content>

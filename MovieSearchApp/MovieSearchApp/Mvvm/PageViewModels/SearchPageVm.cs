@@ -248,8 +248,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 if (SearchText != null)
                 {
 
-                  await SearchMoviesAndUpdateDisplay();
-
+                  var result = await SearchMoviesAndUpdateDisplay();
+                  if (result.Search == null)
+                    {
+                        pageCounter--;
+                        await SearchMoviesAndUpdateDisplay();
+                    }
                 }
                else
                {
@@ -301,7 +305,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
 
         //function that searches movies, used in above methods, cuts repetition
-        public async Task SearchMoviesAndUpdateDisplay()
+        public async Task<MovieCollectionModel> SearchMoviesAndUpdateDisplay()
         {
             MovieObjectList.Clear();
             switch (SelectedFilter.Filter)
@@ -350,6 +354,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     Result = result;                 
                     break;
             }
+            return result;
         }
 
         //This is how we create the list of objects that we will display on screen as we arent pulling it directly from the api we must make it ourselves

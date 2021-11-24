@@ -124,10 +124,20 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             JournalDetailsList = journalDetails;
             foreach (var item in JournalDetailsList)
             {
+                
                 string timeWatched = item.MovieRuntime.Replace(" min", "");
-                TotalTimeWatched = TotalTimeWatched + Int32.Parse(timeWatched);
+                if (timeWatched == "N/A")
+                {
+
+                }
+                else
+                {
+                    TotalTimeWatched = TotalTimeWatched + Int32.Parse(timeWatched);
+                }
+                
 
             }
+            
         }
 
     }

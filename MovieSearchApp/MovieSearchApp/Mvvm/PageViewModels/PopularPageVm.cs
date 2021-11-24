@@ -301,8 +301,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 await MovieSearch(genreListFormatted);
                 if (Result.results.Count == 0)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
                     pageCounter--;
+                    await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+                    await MovieSearch(genreListFormatted);
+                    
 
                 }
             }
@@ -417,7 +419,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             for(int i=0; i < Result.results.Count; i++)
             {
-                Result.results[i].poster_path = Result.results[i].poster_path.Insert(0, "https://image.tmdb.org/t/p/w400");
+                if (Result.results[i].poster_path == null)
+                {
+
+                }
+                else
+                {
+                    Result.results[i].poster_path = Result.results[i].poster_path.Insert(0, "https://image.tmdb.org/t/p/w400");
+                }
+                
             }
         }
         public string Apply(IList<CheckboxModel> checkboxList)
