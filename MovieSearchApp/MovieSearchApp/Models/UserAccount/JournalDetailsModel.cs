@@ -15,7 +15,18 @@ namespace MovieSearchApp.Models.UserAccount
         public string MovieRating
         {
             get => _movieRating;
-            set => _movieRating = value + " / 10";
+            set
+            {
+                if (value.Contains("/ 10"))
+                {
+                    _movieRating = value;
+                }
+                else
+                {
+                    _movieRating = value + " / 10";
+                }
+
+            }
         }
         public string MovieComments { get; set; }
         public string MovieRuntime { get; set; }

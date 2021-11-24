@@ -51,7 +51,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task EditItemExecute(object item1)
         {
             JournalDetailsModel item2 = item1 as JournalDetailsModel;
-
+            await _pageService.PushPageAsync<EditJournalItemPage, EditJournalItemPageVm>(vm => vm.Init(item2, AccountDetails, JournalDetailsList));
         }
 
         public async  Task DeleteItemExecute(object item1)

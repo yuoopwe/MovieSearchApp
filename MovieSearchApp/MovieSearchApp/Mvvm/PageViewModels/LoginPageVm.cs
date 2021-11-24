@@ -122,7 +122,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     {
                         connection.Close();
                         connection.Open();
-                        command.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255), MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255));";
+                        command.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255) NOT NULL, MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255), PRIMARY KEY (MovieID));";
                         command.ExecuteReader();
                         await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
                     }

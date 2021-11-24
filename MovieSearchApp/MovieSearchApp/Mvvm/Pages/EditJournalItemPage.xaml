@@ -4,9 +4,12 @@
              x:Class="MovieSearchApp.Mvvm.Pages.EditJournalItemPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Label Text="{Binding EditItem.MovieTitle}" />
+            <Label Text="Comments"/>
+            <Entry Text="{Binding MovieComments}"/>
+            <Label Text="Rating"/>
+            <Entry Text="{Binding MovieRating}"/>
+            <Button Text="Save" Command="{Binding SaveCommand}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

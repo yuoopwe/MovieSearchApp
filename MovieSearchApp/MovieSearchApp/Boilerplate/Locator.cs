@@ -51,6 +51,8 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<JournalPage>(Lifestyle.Singleton);
 			_IoCC.Register<SettingsPage>(Lifestyle.Singleton);
 			_IoCC.Register<AddToListPage>(Lifestyle.Singleton);
+			_IoCC.Register<EditJournalItemPage>(Lifestyle.Singleton);
+
 
 
 
@@ -69,6 +71,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<JournalPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<SettingsPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<AddToListPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<EditJournalItemPageVm>(Lifestyle.Singleton);
 
 
 

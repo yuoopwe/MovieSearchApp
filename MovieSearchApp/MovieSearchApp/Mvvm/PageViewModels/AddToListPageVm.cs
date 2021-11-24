@@ -91,7 +91,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     break;
                 case "Recommendations":
                     await _pageService.PopToRootAsync();
-                    await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(RecommendationResult, AccountDetails, JournalDetailsList));
+                    await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async(vm) => await vm.Init(RecommendationResult, AccountDetails, JournalDetailsList));
                     break;
                 case "Popular":
                     await _pageService.PopToRootAsync();
