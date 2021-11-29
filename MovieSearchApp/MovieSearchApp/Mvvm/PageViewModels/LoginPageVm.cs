@@ -82,14 +82,18 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task RegisterExecute()
         {
             SqlDataReader reader;
-            SqlCommand command = new SqlCommand();
+            SqlCommand checkAccountCommand = new SqlCommand();
+            SqlCommand makeAccountCommand = new SqlCommand();
+            SqlCommand createJournalCommand = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             //Check account is made
             connection.Open();
-            command.Connection = connection;
-            command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-            SqlDataReader dr = command.ExecuteReader();
+            checkAccountCommand.Connection = connection;
+            checkAccountCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = @Username";
+            checkAccountCommand.Parameters.Add("@Username", SqlDbType.NVarChar);
+            checkAccountCommand.Parameters["@Username"].Value = UsernameText;
+            SqlDataReader dr = checkAccountCommand.ExecuteReader();
             if (dr.Read())
             {
  
@@ -106,25 +110,32 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 connection.Open();
 
                 // create account
-                command.CommandText = $"INSERT INTO[dbo].[LoginTable] (username, password) VALUES('{UsernameText}', '{PasswordText}')";
-                command.ExecuteReader();
+                makeAccountCommand.Connection = connection;
+                makeAccountCommand.CommandText = $"INSERT INTO[dbo].[LoginTable] (username, password) VALUES(@Username, @Password)";
+                makeAccountCommand.Parameters.Add("@Username", SqlDbType.NVarChar);
+                makeAccountCommand.Parameters["@Username"].Value = UsernameText;
+                makeAccountCommand.Parameters.Add("@Password", SqlDbType.NVarChar);
+                makeAccountCommand.Parameters["@Password"].Value = PasswordText;
+                makeAccountCommand.ExecuteReader();
 
                 connection.Close();
                 connection.Open();
 
 
                 //Check account is made
-                command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-                reader = command.ExecuteReader();
+                checkAccountCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = @Username";
+                reader = checkAccountCommand.ExecuteReader();
                 if (reader.Read())
                 {
                     if (UsernameText == reader["username"].ToString().Trim())
                     {
                         connection.Close();
                         connection.Open();
-                        command.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255) NOT NULL, MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255), PRIMARY KEY (MovieID));";
-                        command.ExecuteReader();
+                        createJournalCommand.Connection = connection;
+                        createJournalCommand.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255) NOT NULL, MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255), PRIMARY KEY (MovieID));";
+                        createJournalCommand.ExecuteReader();
                         await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
+                        
                     }
                 }
                 else
@@ -144,12 +155,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             JournalDetailsList = new List<JournalDetailsModel>();
             AccountDetails = new AccountDetailsModel();
             SqlConnection connection = new SqlConnection();
-            SqlCommand command = new SqlCommand();
+            SqlCommand checkAccountCommand = new SqlCommand();
+            SqlCommand readJournalCommand = new SqlCommand();
             connection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             connection.Open();
-            command.Connection = connection;
-            command.CommandText = $"Select * from dbo.LoginTable WHERE username = '{UsernameText}'";
-            SqlDataReader dr = command.ExecuteReader();
+            checkAccountCommand.Connection = connection;
+            checkAccountCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = @Username";
+            checkAccountCommand.Parameters.Add("@Username", SqlDbType.NVarChar);
+            checkAccountCommand.Parameters["@Username"].Value = UsernameText;
+            SqlDataReader dr = checkAccountCommand.ExecuteReader();
             if (dr.Read())
             {
                 if (UsernameText == dr["username"].ToString().Trim() && PasswordText == dr["password"].ToString().Trim())
@@ -162,8 +176,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     dr.Close();
                     connection.Close();
                     connection.Open();
-                    command.CommandText = $"Select * from dbo.{UsernameText}Journal";
-                    dr = command.ExecuteReader();
+                    readJournalCommand.Connection = connection;
+                    readJournalCommand.CommandText = $"Select * from dbo.{UsernameText}Journal";
+                    dr = readJournalCommand.ExecuteReader();
                     while (dr.Read())
                     {
                         JournalDetails = new JournalDetailsModel();

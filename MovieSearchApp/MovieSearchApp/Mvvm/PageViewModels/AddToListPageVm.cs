@@ -10,6 +10,7 @@ using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,17 +65,32 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task SaveExecute()
         {
             SqlDataReader reader;
-            SqlCommand command = new SqlCommand();
+            SqlCommand addToJournalCommand = new SqlCommand();
+            SqlCommand checkJournalCommand = new SqlCommand();
+
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
-            command.Connection = connection;
-            command.CommandText = $"INSERT INTO [dbo].[{AccountDetails.Username}Journal] (MovieID, MovieTitle, MovieRating, MovieComments, MovieRuntime) VALUES ('{DetailsModel.imdbID}','{DetailsModel.Title}','{MovieRating}','{MovieComments}','{DetailsModel.Runtime}');";
-            command.ExecuteReader();
+            addToJournalCommand.Connection = connection;
+            addToJournalCommand.CommandText = $"INSERT INTO [dbo].[{AccountDetails.Username}Journal] (MovieID, MovieTitle, MovieRating, MovieComments, MovieRuntime) VALUES (@MovieID, @MovieTitle, @MovieRating, @MovieComments, @MovieRuntime)";
+            addToJournalCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters.Add("@MovieTitle", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters.Add("@MovieRating", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters.Add("@MovieComments", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters.Add("@MovieRuntime", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters["@MovieID"].Value = DetailsModel.imdbID;
+            addToJournalCommand.Parameters["@MovieTitle"].Value = DetailsModel.Title;
+            addToJournalCommand.Parameters["@MovieRating"].Value = MovieRating;
+            addToJournalCommand.Parameters["@MovieComments"].Value = MovieComments;
+            addToJournalCommand.Parameters["@MovieRuntime"].Value = DetailsModel.Runtime;
+            addToJournalCommand.ExecuteReader();
             connection.Close();
             connection.Open();
-            command.CommandText = $"SELECT * FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID = '{DetailsModel.imdbID}'";
-            reader = command.ExecuteReader();
+            checkJournalCommand.Connection = connection;
+            checkJournalCommand.CommandText = $"SELECT * FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID = @MovieID";
+            checkJournalCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
+            checkJournalCommand.Parameters["@MovieID"].Value = DetailsModel.imdbID;
+            reader = checkJournalCommand.ExecuteReader();
             if (reader.Read())
             {
                 if (DetailsModel.imdbID == reader["MovieID"].ToString().Trim())

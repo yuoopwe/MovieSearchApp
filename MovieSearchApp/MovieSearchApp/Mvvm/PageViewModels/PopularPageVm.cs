@@ -177,7 +177,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 new AgeRatingModel {Rating = "PG-13"},
                 new AgeRatingModel {Rating = "R"},
                 new AgeRatingModel {Rating = "NC-17"},
-
             });
             CheckboxList = new List<CheckboxModel>(new[]
             {

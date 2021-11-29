@@ -7,6 +7,7 @@ using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -58,13 +59,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             JournalDetailsModel item2 = item1 as JournalDetailsModel;
             SqlDataReader reader;
-            SqlCommand command = new SqlCommand();
+            SqlCommand deleteDbCommand = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
-            command.Connection = connection;
-            command.CommandText = $"DELETE FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID='{item2.MovieID}';";
-            command.ExecuteReader();
+            deleteDbCommand.Connection = connection;
+            deleteDbCommand.CommandText = $"DELETE FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID = @MovieID;";
+            deleteDbCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
+            deleteDbCommand.Parameters["@MovieID"].Value = item2.MovieID;
+            deleteDbCommand.ExecuteReader();
             var itemToRemove = JournalDetailsList.Single(r => r.MovieID == item2.MovieID);
             JournalDetailsList.Remove(itemToRemove);
             _flyoutVm.SetAccountDetails(AccountDetails, JournalDetailsList);

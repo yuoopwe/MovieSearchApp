@@ -7,6 +7,7 @@ using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -61,20 +62,30 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public async Task SaveExecute()
         {
             SqlDataReader reader;
-            SqlCommand command = new SqlCommand();
+            SqlCommand updateJournalCommand = new SqlCommand();
+            SqlCommand checkJournalCommand = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
-            command.Connection = connection;
-            command.CommandText = $"UPDATE [dbo].[{AccountDetails.Username}Journal] SET MovieComments = '{MovieComments}', MovieRating = '{MovieRating}' WHERE MovieID = '{EditItem.MovieID}';";
-            command.ExecuteReader();
+            updateJournalCommand.Connection = connection;
+            updateJournalCommand.CommandText = $"UPDATE [dbo].[{AccountDetails.Username}Journal] SET MovieComments = @MovieComments, MovieRating = @MovieRating WHERE MovieID = @MovieID;";
+            updateJournalCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
+            updateJournalCommand.Parameters.Add("@MovieComments", SqlDbType.NVarChar);
+            updateJournalCommand.Parameters.Add("@MovieRating", SqlDbType.NVarChar);
+            updateJournalCommand.Parameters["@MovieID"].Value = EditItem.MovieID;
+            updateJournalCommand.Parameters["@MovieComments"].Value = MovieComments;
+            updateJournalCommand.Parameters["@MovieRating"].Value = MovieRating;
+            updateJournalCommand.ExecuteReader();
             connection.Close();
             connection.Open();
-            command.CommandText = $"SELECT * FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID = '{EditItem.MovieID}'";
-            reader = command.ExecuteReader();
+            checkJournalCommand.Connection = connection;
+            checkJournalCommand.CommandText = $"SELECT * FROM [dbo].[{AccountDetails.Username}Journal] WHERE MovieID = @MovieID";
+            checkJournalCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
+            checkJournalCommand.Parameters["@MovieID"].Value = EditItem.MovieID;
+            reader = checkJournalCommand.ExecuteReader();
             if (reader.Read())
             {
-                if (MovieComments.Trim() == reader["MovieComments"].ToString().Trim() || MovieRating.Trim() == reader["MovieRating"])
+                if (MovieComments.Trim() == reader["MovieComments"].ToString().Trim() || MovieRating.Trim() == reader["MovieRating"].ToString().Trim())
                 {
                     EditItem.MovieComments = MovieComments;
                     EditItem.MovieRating = MovieRating;
