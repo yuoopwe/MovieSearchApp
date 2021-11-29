@@ -1,13 +1,15 @@
-﻿namespace MovieSearchApp.Boilerplate
+﻿using System.Configuration;
+
+namespace MovieSearchApp.Boilerplate
 {
     public class ApiConstants
     {
         public const string OmdbBaseApiUrl = "http://www.omdbapi.com/";
-        public const string OmdbApiKey = "af7902fc";
+        public static string OmdbApiKey = ConfigurationManager.ConnectionStrings["OmdbApiKey"].ConnectionString;
         public const string TastediveBaseApiUrl = "https://tastedive.com/api/";
-        public const string TastediveApiKey = "427011-MovieSea-A4B5VE9O";
+        public static string TastediveApiKey = ConfigurationManager.ConnectionStrings["TastediveApiKey"].ConnectionString;
         public const string TheMovieDbBaseApiUrl = "https://api.themoviedb.org/3/";
-        public const string TheMovieDbApiKey = "eb2e759599ebe9cec2167505b8edb85e";
+        public static string TheMovieDbApiKey = ConfigurationManager.ConnectionStrings["TheMovieDbApiKey"].ConnectionString;
 
 
     }
