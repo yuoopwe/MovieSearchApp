@@ -70,6 +70,24 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _searchResult, value);
         }
 
+
+
+       /* public List<MovieModel> SearchResult2  - long form
+        {
+            get => _searchResult2;
+            set 
+            {
+                if(_searchResult2 != value)
+                {
+                    _searchResult2 = value;
+                    this.OnNewPropertyChanged(nameof(SearchResult2));
+                }
+            }
+        }*/
+
+
+
+
         public MovieDetailsModel itemn { get; set; }
         public PickerModel SelectedFilter
         {

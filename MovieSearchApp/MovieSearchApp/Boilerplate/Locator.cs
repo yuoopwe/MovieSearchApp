@@ -85,6 +85,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
 			_IoCC.Register<ThemoviedbService>(GetTheMovieDbService, Lifestyle.Singleton);
+			_IoCC.Register<PasswordHasherService>(GetPasswordHasherService, Lifestyle.Singleton);
 			
 
 
@@ -107,6 +108,11 @@ namespace MovieSearchApp.Boilerplate
 		{
 			return new TastediveService(_IoCC.GetInstance<IRestService>(), ApiConstants.TastediveApiKey, ApiConstants.TastediveBaseApiUrl);
 		}
+		private PasswordHasherService GetPasswordHasherService()
+		{
+			return new PasswordHasherService(_IoCC.GetInstance<IRestService>());
+		}
+
 
 
 		private RestService GetRestService()

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Configuration;
 using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
+using MovieSearchApp.Services;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -19,11 +20,18 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _passwordText;
         private string _usernameText;
         private readonly MyFlyoutPageFlyoutVm _flyoutVm;
+        private readonly PasswordHasherService _passwordHasher;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
         private bool _loggedIn;
         private bool _signedOut;
+        private bool _isPassword;
 
+        public bool IsPassword
+        {
+            get => _isPassword;
+            set => SetProperty(ref _isPassword, value);
+        }
         public bool LoggedIn
         {
             get => _loggedIn;
@@ -39,7 +47,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public JournalDetailsModel JournalDetails { get; set; }
         public List<JournalDetailsModel> JournalDetailsList { get; set; }
 
-
+        public ICommand ShowPasswordCommand { get; }
         public ICommand RegisterCommand { get; }
         public ICommand LoginCommand { get; }
         public ICommand SignoutCommand { get; }
@@ -55,17 +63,31 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _usernameText, value);
         }
 
-        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
+        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, PasswordHasherService passwordHasher)
         {
-            
+            _passwordHasher = passwordHasher;
             _alertService = alertService;
             _pageService = pageService;
             _flyoutVm = flyoutVm;
+            IsPassword = true;
             LoggedIn = false;
             SignedOut = true;
             RegisterCommand = new CommandBuilder().SetExecuteAsync(RegisterExecute).Build();
             LoginCommand = new CommandBuilder().SetExecuteAsync(LoginExecute).Build();
             SignoutCommand = new CommandBuilder().SetExecuteAsync(SignoutExecute).Build();
+            ShowPasswordCommand = new CommandBuilder().SetExecuteAsync(ShowPasswordExecute).Build();
+        }
+
+        private async Task ShowPasswordExecute()
+        {
+            if(IsPassword == true)
+            {
+                IsPassword = false;
+            }
+            else
+            {
+                IsPassword = true;
+            }
         }
 
         public async Task SignoutExecute()
@@ -114,8 +136,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 makeAccountCommand.CommandText = $"INSERT INTO[dbo].[LoginTable] (username, password) VALUES(@Username, @Password)";
                 makeAccountCommand.Parameters.Add("@Username", SqlDbType.NVarChar);
                 makeAccountCommand.Parameters["@Username"].Value = UsernameText;
+                // Hash password
+                var newPassword = _passwordHasher.Hash(PasswordText);
+
                 makeAccountCommand.Parameters.Add("@Password", SqlDbType.NVarChar);
-                makeAccountCommand.Parameters["@Password"].Value = PasswordText;
+                makeAccountCommand.Parameters["@Password"].Value = newPassword;
                 makeAccountCommand.ExecuteReader();
 
                 connection.Close();
@@ -163,10 +188,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             checkAccountCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = @Username";
             checkAccountCommand.Parameters.Add("@Username", SqlDbType.NVarChar);
             checkAccountCommand.Parameters["@Username"].Value = UsernameText;
+
             SqlDataReader dr = checkAccountCommand.ExecuteReader();
             if (dr.Read())
             {
-                if (UsernameText == dr["username"].ToString().Trim() && PasswordText == dr["password"].ToString().Trim())
+                if (UsernameText == dr["username"].ToString().Trim() && _passwordHasher.Verify(PasswordText,dr["password"].ToString().Trim()))
                 {
                     AccountDetails.Id = Convert.ToInt32(dr["id"]);
                     AccountDetails.ProfileName = dr["profile_name"].ToString().Trim();
@@ -198,9 +224,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 }
                 else
                 {
-                 await _alertService.DisplayAlertAsync("Success", "Login failed, please try again", "Ok");
+                    await _alertService.DisplayAlertAsync("Success", "Login failed, please try again", "Ok");
                 }
             }
+
             connection.Close();
             return;
 

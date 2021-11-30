@@ -5,7 +5,10 @@
     <ContentPage.Content>
         <StackLayout>
             <Entry Placeholder="Enter username..." Text="{Binding UsernameText}" IsVisible="{Binding SignedOut}"/>
-            <Entry Placeholder="Enter password..." Text="{Binding PasswordText}" IsVisible="{Binding SignedOut}"/>
+            <Grid ColumnDefinitions="2*,*">
+                <Entry Grid.Column="0" Placeholder="Enter password..." Text="{Binding PasswordText}" IsVisible="{Binding SignedOut}" IsPassword="{Binding IsPassword}"/>
+                <Button Grid.Column="1" Text="Show" Command="{Binding ShowPasswordCommand}" IsVisible="{Binding SignedOut}"/>
+            </Grid>
             <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding SignedOut}"/>
             <Button Text="Login" Command="{Binding LoginCommand}" IsVisible="{Binding SignedOut}"/>
             <Button Text="Sign out" Command="{Binding SignoutCommand}" IsVisible="{Binding LoggedIn}"/>
