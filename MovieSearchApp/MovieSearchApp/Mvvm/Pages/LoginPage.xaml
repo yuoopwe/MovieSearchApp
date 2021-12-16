@@ -3,15 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.LoginPage">
     <ContentPage.Content>
-        <StackLayout>
-            <Entry Placeholder="Enter username..." Text="{Binding UsernameText}" IsVisible="{Binding SignedOut}"/>
-            <Grid ColumnDefinitions="2*,*">
-                <Entry Grid.Column="0" Placeholder="Enter password..." Text="{Binding PasswordText}" IsVisible="{Binding SignedOut}" IsPassword="{Binding IsPassword}"/>
-                <Button Grid.Column="1" Text="Show" Command="{Binding ShowPasswordCommand}" IsVisible="{Binding SignedOut}"/>
+        <Grid BackgroundColor="LightSlateGray">
+            <Grid RowDefinitions="200,Auto,Auto" ColumnDefinitions="50,700,50">
+                <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto">
+                    <Entry Placeholder="Enter username..." Text="{Binding UsernameText}" IsVisible="{Binding SignedOut}" Grid.Row="0"/>
+                    <Grid ColumnDefinitions="2*,*" Grid.Row="1">
+                        <Entry Grid.Column="0" Placeholder="Enter password..." Text="{Binding PasswordText}" IsVisible="{Binding SignedOut}" IsPassword="{Binding IsPassword}"/>
+                        <Button Grid.Column="1" Text="Show" Command="{Binding ShowPasswordCommand}" IsVisible="{Binding SignedOut}" BackgroundColor="#2E333A" TextColor="White"/>
+                    </Grid>
+                    <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding SignedOut}" Grid.Row="2" BackgroundColor="#2E333A" TextColor="White"/>
+                    <Button Text="Login" Command="{Binding LoginCommand}" IsVisible="{Binding SignedOut}" Grid.Row="3" BackgroundColor="#2E333A" TextColor="White"/>
+                    <Button Text="Sign out" Command="{Binding SignoutCommand}" IsVisible="{Binding LoggedIn}" Grid.Row="2" BackgroundColor="#2E333A" TextColor="White"/>
+                </Grid>
             </Grid>
-            <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding SignedOut}"/>
-            <Button Text="Login" Command="{Binding LoginCommand}" IsVisible="{Binding SignedOut}"/>
-            <Button Text="Sign out" Command="{Binding SignoutCommand}" IsVisible="{Binding LoggedIn}"/>
-        </StackLayout>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
