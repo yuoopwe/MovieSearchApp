@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Configuration;
 using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Services;
+using Xamarin.Forms;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
@@ -26,11 +26,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private bool _loggedIn;
         private bool _signedOut;
         private bool _isPassword;
+        private bool _isNotPassword;
+
+        private ImageSource _eyeIconOpen;
 
         public bool IsPassword
         {
             get => _isPassword;
             set => SetProperty(ref _isPassword, value);
+        }
+        public bool IsNotPassword
+        {
+            get => _isNotPassword;
+            set => SetProperty(ref _isNotPassword, value);
         }
         public bool LoggedIn
         {
@@ -63,6 +71,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _usernameText, value);
         }
 
+        public ImageSource EyeIconOpen { get; set; }
+        public ImageSource EyeIconClosed { get; set; }
+
         public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, PasswordHasherService passwordHasher)
         {
             _passwordHasher = passwordHasher;
@@ -70,12 +81,16 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             _flyoutVm = flyoutVm;
             IsPassword = true;
+            IsNotPassword = false;
             LoggedIn = false;
             SignedOut = true;
             RegisterCommand = new CommandBuilder().SetExecuteAsync(RegisterExecute).Build();
             LoginCommand = new CommandBuilder().SetExecuteAsync(LoginExecute).Build();
             SignoutCommand = new CommandBuilder().SetExecuteAsync(SignoutExecute).Build();
             ShowPasswordCommand = new CommandBuilder().SetExecuteAsync(ShowPasswordExecute).Build();
+            EyeIconOpen = ImageSource.FromResource("MovieSearchApp.Images.eye-outline.png");
+            EyeIconClosed = ImageSource.FromResource("MovieSearchApp.Images.eye-off-outline.png");
+
         }
 
         private async Task ShowPasswordExecute()
@@ -83,10 +98,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             if(IsPassword == true)
             {
                 IsPassword = false;
+                IsNotPassword = true;
             }
             else
             {
                 IsPassword = true;
+                IsNotPassword = false;
             }
         }
 

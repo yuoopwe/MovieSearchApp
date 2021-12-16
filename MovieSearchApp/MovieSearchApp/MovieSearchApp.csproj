@@ -17,6 +17,8 @@
     <None Remove="Assets\profile.png" />
     <None Remove="Assets\search.png" />
     <None Remove="Assets\Settings.png" />
+    <None Remove="Images\eye-off-outline.png" />
+    <None Remove="Images\eye-outline.png" />
     <None Remove="Images\Journal.png" />
     <None Remove="Images\menu144.png" />
     <None Remove="Images\menu96.png" />
@@ -25,10 +27,11 @@
     <None Remove="Images\search1.png" />
     <None Remove="Images\Settings1.png" />
     <None Remove="Images\signout.png" />
-    <None Remove="Images\tgBtn.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Images\eye-off-outline.png" />
+    <EmbeddedResource Include="Images\eye-outline.png" />
     <EmbeddedResource Include="Images\Journal.png" />
     <EmbeddedResource Include="Images\menu144.png" />
     <EmbeddedResource Include="Images\menu96.png" />
@@ -37,7 +40,6 @@
     <EmbeddedResource Include="Images\search1.png" />
     <EmbeddedResource Include="Images\Settings1.png" />
     <EmbeddedResource Include="Images\signout.png" />
-    <EmbeddedResource Include="Images\tgBtn.png" />
   </ItemGroup>
 
   <ItemGroup>
