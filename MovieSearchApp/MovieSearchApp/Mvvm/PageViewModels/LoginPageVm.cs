@@ -112,6 +112,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             await _alertService.DisplayAlertAsync("Success", "You Have Signed Out", "Ok");
             SignedOut = true;
             LoggedIn = false;
+            IsPassword = true;
+            IsNotPassword = false;
             AccountDetails = new AccountDetailsModel(); 
             AccountDetails.IsLoggedIn = false;
             JournalDetailsList.Clear();
@@ -238,6 +240,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     await _alertService.DisplayAlertAsync("Success", "You have logged in Successfully", "Ok");
                     SignedOut = false;
                     LoggedIn = true;
+                    IsPassword = false;
+                    IsNotPassword = false;
                 }
                 else
                 {

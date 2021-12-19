@@ -12,7 +12,7 @@
                         <Image Grid.Column="1" Source="{Binding EyeIconOpen}" HeightRequest="20" IsVisible="{Binding IsNotPassword}"/>
                         <Image Grid.Column="1" Source="{Binding EyeIconClosed}" HeightRequest="20" IsVisible="{Binding IsPassword}"/>
 
-                        <Button Grid.Column="1" Text="Show" Command="{Binding ShowPasswordCommand}" IsVisible="true" Opacity="0" BackgroundColor="#2E333A" TextColor="White"/>
+                        <Button Grid.Column="1" Text="Show" Command="{Binding ShowPasswordCommand}" IsVisible="{Binding SignedOut}" Opacity="0" BackgroundColor="#2E333A" TextColor="White"/>
                     </Grid>
                     <Button Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding SignedOut}" Grid.Row="2" BackgroundColor="#2E333A" TextColor="White"/>
                     <Button Text="Login" Command="{Binding LoginCommand}" IsVisible="{Binding SignedOut}" Grid.Row="3" BackgroundColor="#2E333A" TextColor="White"/>
