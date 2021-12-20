@@ -1,8 +1,10 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
+using MovieSearchApp.Models.OMDb;
 using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
+using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
@@ -20,12 +22,23 @@ namespace MovieSearchApp.Mvvm.PageViewModels
     {
         private IAlertService _alertService;
         private IPageServiceZero _pageService;
+        private OmdbService _omdbService; 
         private MyFlyoutPageFlyoutVm _flyoutVm;
         private List<JournalDetailsModel> _journalDetailsList;
 
 
         public ICommand DeleteItemCommand { get; }
         public ICommand EditItemCommand { get; }
+
+        public ICommand GetDetailsCommand { get; }
+
+        private MovieDetailsModel _detailsresult;
+        public MovieDetailsModel DetailsResult
+        {
+            get => _detailsresult;
+            set => SetProperty(ref _detailsresult, value);
+        }
+
         public AccountDetailsModel AccountDetails { get; set; }
 
 
@@ -36,15 +49,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
 
 
-        public JournalPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
+        public JournalPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, OmdbService omdbService)
         {
 
             _alertService = alertService;
             _pageService = pageService;
             _flyoutVm = flyoutVm;
+            _omdbService = omdbService;
 
             DeleteItemCommand = new CommandBuilder().SetExecuteAsync(DeleteItemExecute).Build();
             EditItemCommand = new CommandBuilder().SetExecuteAsync(EditItemExecute).Build();
+            GetDetailsCommand = new CommandBuilder().SetExecuteAsync(GetDetailsExecute).Build();
 
 
         }
@@ -53,6 +68,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             JournalDetailsModel item2 = item1 as JournalDetailsModel;
             await _pageService.PushPageAsync<EditJournalItemPage, EditJournalItemPageVm>(vm => vm.Init(item2, AccountDetails, JournalDetailsList));
+        }
+
+        public async Task GetDetailsExecute(object item1)
+        {
+
+            JournalDetailsModel item2 = item1 as JournalDetailsModel;
+            var movieId = item2.MovieID;
+            MovieDetailsModel detailsResult = await _omdbService.GetMovieDetailsWithIdAsync(movieId);
+            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(detailsResult));
+            DetailsResult = detailsResult;
+
         }
 
         public async  Task DeleteItemExecute(object item1)
