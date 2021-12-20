@@ -30,5 +30,7 @@ namespace MovieSearchApp.Models.UserAccount
         }
         public string MovieComments { get; set; }
         public string MovieRuntime { get; set; }
+
+        public string MoviePoster { get; set; }
     }
 }

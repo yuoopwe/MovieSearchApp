@@ -31,6 +31,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private MyFlyoutPageFlyoutVm _flyoutVm;
         private string _movieComments;
         private string _movieRating;
+        private string _moviePoster; 
         private MovieDetailsModel _detailsModel;
 
         public string CurrentPage { get; set; }
@@ -51,6 +52,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             get => _movieComments;
             set => SetProperty(ref _movieComments, value);
         }
+
+        public string MoviePoster
+        {
+            get => _moviePoster;
+            set => SetProperty(ref _moviePoster, value);
+        }
+
         public AddToListPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
         {
 
@@ -72,17 +80,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             addToJournalCommand.Connection = connection;
-            addToJournalCommand.CommandText = $"INSERT INTO [dbo].[{AccountDetails.Username}Journal] (MovieID, MovieTitle, MovieRating, MovieComments, MovieRuntime) VALUES (@MovieID, @MovieTitle, @MovieRating, @MovieComments, @MovieRuntime)";
+            addToJournalCommand.CommandText = $"INSERT INTO [dbo].[{AccountDetails.Username}Journal] (MovieID, MovieTitle, MovieRating, MovieComments, MovieRuntime, MoviePoster) VALUES (@MovieID, @MovieTitle, @MovieRating, @MovieComments, @MovieRuntime, @MoviePoster)";
             addToJournalCommand.Parameters.Add("@MovieID", SqlDbType.NVarChar);
             addToJournalCommand.Parameters.Add("@MovieTitle", SqlDbType.NVarChar);
             addToJournalCommand.Parameters.Add("@MovieRating", SqlDbType.NVarChar);
             addToJournalCommand.Parameters.Add("@MovieComments", SqlDbType.NVarChar);
             addToJournalCommand.Parameters.Add("@MovieRuntime", SqlDbType.NVarChar);
+            addToJournalCommand.Parameters.Add("@MoviePoster", SqlDbType.NVarChar);
             addToJournalCommand.Parameters["@MovieID"].Value = DetailsModel.imdbID;
             addToJournalCommand.Parameters["@MovieTitle"].Value = DetailsModel.Title;
             addToJournalCommand.Parameters["@MovieRating"].Value = MovieRating;
             addToJournalCommand.Parameters["@MovieComments"].Value = MovieComments;
             addToJournalCommand.Parameters["@MovieRuntime"].Value = DetailsModel.Runtime;
+            addToJournalCommand.Parameters["@MoviePoster"].Value = DetailsModel.Poster;
             addToJournalCommand.ExecuteReader();
             connection.Close();
             connection.Open();
@@ -95,7 +105,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 if (DetailsModel.imdbID == reader["MovieID"].ToString().Trim())
                 {
-                    JournalDetailsList.Add(new JournalDetailsModel { MovieID = DetailsModel.imdbID, MovieComments = MovieComments, MovieRating = MovieRating, MovieRuntime = DetailsModel.Runtime, MovieTitle = DetailsModel.Title });
+                    JournalDetailsList.Add(new JournalDetailsModel { MovieID = DetailsModel.imdbID, MovieComments = MovieComments, MovieRating = MovieRating, MovieRuntime = DetailsModel.Runtime, MovieTitle = DetailsModel.Title, MoviePoster = DetailsModel.Poster });
                     await _alertService.DisplayAlertAsync("Message", "Movie Added To List Successfully","Ok");
                 }
             }
@@ -126,6 +136,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             JournalDetailsList = journalList;
             MovieRating = "";
             MovieComments = "";
+            MoviePoster = ""; 
         }
 
         public void RecommendationInit(MovieDetailsModel detailsModel, List<JournalDetailsModel> journalList, AccountDetailsModel accountDetails, string PrevPage, RecommendationModel recModel)
@@ -137,6 +148,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             RecommendationResult = recModel;
             MovieRating = "";
             MovieComments = "";
+            MoviePoster = ""; 
         }
     }
 }

@@ -176,7 +176,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                         connection.Close();
                         connection.Open();
                         createJournalCommand.Connection = connection;
-                        createJournalCommand.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255) NOT NULL, MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255), PRIMARY KEY (MovieID));";
+                        createJournalCommand.CommandText = $"CREATE TABLE {UsernameText}Journal (MovieID varchar(255) NOT NULL, MovieTitle varchar(255), MovieRating varchar(10), MovieComments varchar(255), MovieRuntime varchar(255), PRIMARY KEY (MovieID), MoviePoster varchar(255));";
                         createJournalCommand.ExecuteReader();
                         await _alertService.DisplayAlertAsync("Success", "Account creation successful", "Ok");
                         
@@ -232,6 +232,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                         JournalDetails.MovieRating = (string)dr["MovieRating"];
                         JournalDetails.MovieComments = (string)dr["MovieComments"];
                         JournalDetails.MovieRuntime = (string)dr["MovieRuntime"];
+                        JournalDetails.MoviePoster = (string)dr["MoviePoster"]; 
                         JournalDetailsList.Add(JournalDetails);
                         
 
