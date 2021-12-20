@@ -20,7 +20,14 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _profileDescriptionText;
         private string _profileNameText;
         private string _totalTimeWatched;
-        private string _newTotal; 
+        private string _newTotal;
+        private string _searchText;
+
+        public string SearchText
+        {
+            get => _searchText;
+            set => SetProperty(ref _searchText, value);
+        }
 
         public string ProfileDescriptionText
         {
@@ -33,8 +40,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _totalTimeWatched, value);
         }
 
-
-
         public string ProfileNameText
         {
             get => _profileNameText;
@@ -46,15 +51,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand ChangeProfileNameCommand { get; }
         public ICommand ChangeProfileDescriptionCommand { get; }
 
+        public ICommand SearchTextCommand { get; }
+
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService)
         {
 
             _alertService = alertService;
             _pageService = pageService;
-  
             ChangeProfileNameCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileNameExecute).Build();
             ChangeProfileDescriptionCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileDescriptionExecute).Build();
+            SearchTextCommand = new CommandBuilder().SetExecuteAsync(SearchTextExecute).Build();
 
         }
 
@@ -83,7 +90,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 }
                 else
                 {
-                    await _alertService.DisplayAlertAsync("Success", "Profile Description Change Fauiled", "Ok");
+                    await _alertService.DisplayAlertAsync("Success", "Profile Description Change Failed", "Ok");
 
                 }
             }
@@ -116,6 +123,37 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     await _alertService.DisplayAlertAsync("Success", "Profile Name Change Fauiled", "Ok");
 
                 }
+            }
+
+        }
+
+        public async Task SearchTextExecute()
+        {
+            SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            //Check account is made
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"UPDATE [dbo].[LoginTable] Set profile_name = '{ProfileNameText}' Where id = '{AccountDetails.Id}'; ";
+            command.ExecuteReader();
+            connection.Close();
+            connection.Open();
+            command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = '{SearchText}'";
+            reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                if (SearchText.Trim() == reader["profile_name"].ToString().Trim())
+                {
+                    ProfileNameText = reader["profile_name"].ToString().Trim();
+                    ProfileDescriptionText = reader["profile_description"].ToString().Trim();
+                        
+                }
+            }
+            else
+            {
+                await _alertService.DisplayAlertAsync("Error", "This profile name does not exist", "Ok");
             }
 
         }

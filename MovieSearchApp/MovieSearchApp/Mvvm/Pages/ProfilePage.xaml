@@ -3,16 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.ProfilePage">
     <ContentPage.Content>
-        <StackLayout BackgroundColor="LightSlateGray">
-            <Label Text="Profile Name" FontSize="20"/>
-            <Entry Text="{Binding ProfileNameText}"/>
-            <Button Text="Change Name" Command="{Binding ChangeProfileNameCommand}"/>
-            <Label Text="Profile Description" FontSize="20"/>
-            <Entry Text="{Binding ProfileDescriptionText}"/>
-            <Button Text="Change Description" Command="{Binding ChangeProfileDescriptionCommand}"/>
-            <Label Text="Profile Stats" FontSize="20" HorizontalOptions="Center"/>
-          
-            <Label Text="{Binding TotalTimeWatched}" HorizontalOptions="Center"/>
-        </StackLayout>
+
+
+        <Grid BackgroundColor="LightSlateGray" 
+                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+            <Entry Placeholder="Search a user name" Text="{Binding SearchText}" Grid.Column="0" Grid.Row="0"/>
+            <Button Text="Search" Command="{Binding SearchTextCommand}" Grid.Column="1" Grid.Row="0"/>
+            
+            <Label Text="Profile Name" FontSize="20" Grid.Row="1" Grid.ColumnSpan="2"/>
+            <Entry Text="{Binding ProfileNameText}" Grid.Row="2" Grid.ColumnSpan="2"/>
+            <Button Text="Change Name" Command="{Binding ChangeProfileNameCommand}" Grid.Row="3" Grid.ColumnSpan="2"/>
+            
+            <Label Text="Profile Description" FontSize="20" Grid.Row="4" Grid.ColumnSpan="2"/>
+            <Entry Text="{Binding ProfileDescriptionText}" Grid.Row="5" Grid.ColumnSpan="2"/>
+            <Button Text="Change Description" Command="{Binding ChangeProfileDescriptionCommand}" Grid.Row="6" Grid.ColumnSpan="2"/>
+            
+            <Label Text="Profile Stats" FontSize="20" HorizontalOptions="Center" Grid.Row="7" Grid.ColumnSpan="2"/>
+            <Label Text="{Binding TotalTimeWatched}" HorizontalOptions="Center" Grid.Row="8" Grid.ColumnSpan="2"/>
+            
+            </Grid>
+               
     </ContentPage.Content>
 </ContentPage>
