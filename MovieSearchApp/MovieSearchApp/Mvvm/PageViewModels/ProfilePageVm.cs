@@ -19,18 +19,22 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private readonly IPageServiceZero _pageService;
         private string _profileDescriptionText;
         private string _profileNameText;
-        private int _totalTimeWatched;
+        private string _totalTimeWatched;
+        private string _newTotal; 
 
         public string ProfileDescriptionText
         {
             get => _profileDescriptionText;
             set => SetProperty(ref _profileDescriptionText, value);
         }
-        public int TotalTimeWatched
+        public string TotalTimeWatched
         {
             get => _totalTimeWatched;
             set => SetProperty(ref _totalTimeWatched, value);
         }
+
+
+
         public string ProfileNameText
         {
             get => _profileNameText;
@@ -117,7 +121,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
         {
-            TotalTimeWatched = 0;
+            TotalTimeWatched = "";
+            _newTotal = "";
             AccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
@@ -128,16 +133,20 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 string timeWatched = item.MovieRuntime.Replace(" min", "");
                 if (timeWatched == "N/A")
                 {
-
+                  
                 }
                 else
                 {
-                    TotalTimeWatched = TotalTimeWatched + Int32.Parse(timeWatched);
+                    if (_newTotal != "") 
+                        _newTotal = "" + (Int32.Parse(_newTotal) + Int32.Parse(timeWatched));
+                    else
+                        _newTotal = "" + Int32.Parse(timeWatched);
                 }
                 
 
             }
-            
+            TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
+
         }
 
     }
