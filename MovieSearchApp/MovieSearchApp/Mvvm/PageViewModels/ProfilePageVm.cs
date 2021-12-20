@@ -2,10 +2,12 @@
 using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
+using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +24,23 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _totalTimeWatched;
         private string _newTotal;
         private string _searchText;
+        private bool _otherUser;
+        private bool _currentUser;
+
+        public AccountDetailsModel SearchAccountDetails { get; set; }
+        public List<JournalDetailsModel> SearchJournalDetailsList { get; set; }
+        public JournalDetailsModel SearchJournalDetails { get; set; }
+        public bool OtherUser
+        {
+            get => _otherUser;
+            set => SetProperty(ref _otherUser, value);
+        }
+        public bool CurrentUser
+        {
+            get => _currentUser;
+            set => SetProperty(ref _currentUser, value);
+        }
+
 
         public string SearchText
         {
@@ -45,13 +64,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             get => _profileNameText;
             set => SetProperty(ref _profileNameText, value);
         }
+        public AccountDetailsModel DisplayAccountDetails { get; set; }
         public AccountDetailsModel AccountDetails { get; set; }
+
         public List<JournalDetailsModel> JournalDetailsList { get; set; }
 
         public ICommand ChangeProfileNameCommand { get; }
         public ICommand ChangeProfileDescriptionCommand { get; }
 
-        public ICommand SearchTextCommand { get; }
+        public ICommand UserSearchCommand { get; }
 
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService)
@@ -61,7 +82,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             _pageService = pageService;
             ChangeProfileNameCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileNameExecute).Build();
             ChangeProfileDescriptionCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileDescriptionExecute).Build();
-            SearchTextCommand = new CommandBuilder().SetExecuteAsync(SearchTextExecute).Build();
+            UserSearchCommand = new CommandBuilder().SetExecuteAsync(UserSearchExecute).Build();
 
         }
 
@@ -74,19 +95,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             //Check account is made
             connection.Open();
             command.Connection = connection;
-            command.CommandText = $"UPDATE [dbo].[LoginTable] Set profile_description = '{ProfileDescriptionText}' Where id = '{AccountDetails.Id}'; ";
+            command.CommandText = $"UPDATE [dbo].[LoginTable] Set profile_description = '{ProfileDescriptionText}' Where id = '{DisplayAccountDetails.Id}'; ";
             command.ExecuteReader();
             connection.Close();
             connection.Open();
-            command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{AccountDetails.Id}'";
+            command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{DisplayAccountDetails.Id}'";
             reader = command.ExecuteReader();
             if (reader.Read())
             {
                 if (ProfileDescriptionText.Trim() == reader["profile_description"].ToString().Trim())
                 {
-                    AccountDetails.ProfileDescription = ProfileDescriptionText;
+                    DisplayAccountDetails.ProfileDescription = ProfileDescriptionText;
                     await _alertService.DisplayAlertAsync("Success", "Profile Description Change Successful", "Ok");
-                    AccountDetails.ProfileName = ProfileNameText;
+                    DisplayAccountDetails.ProfileName = ProfileNameText;
                 }
                 else
                 {
@@ -127,36 +148,77 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
-        public async Task SearchTextExecute()
+        //Allows you to search for another users profile
+        public async Task UserSearchExecute()
         {
+            SearchAccountDetails = new AccountDetailsModel();
+            SearchJournalDetailsList = new List<JournalDetailsModel>();
+
             SqlDataReader reader;
             SqlCommand command = new SqlCommand();
+            SqlCommand readJournalCommand = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             command.Connection = connection;
-            command.CommandText = $"Select profile_name, profile_description from dbo.LoginTable WHERE profile_name = '{SearchText}'";
+            command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = @Username";
+            command.Parameters.Add("@Username", SqlDbType.NVarChar);
+            command.Parameters["@Username"].Value = SearchText;
+            if(SearchText.Trim().ToLower() == AccountDetails.ProfileName.ToLower())
+            {
+                await _alertService.DisplayAlertAsync("Failure", "You cannot search your own profile name", "Ok");
+                goto end;
+            }
             reader = command.ExecuteReader();
             if (reader.Read())
             {
-                if (SearchText == reader["profile_name"].ToString().Trim())
+                if (SearchText.ToLower() == reader["profile_name"].ToString().Trim().ToLower())
                 {
-                    ProfileNameText = reader["profile_name"].ToString();
-                    ProfileDescriptionText = reader["profile_description"].ToString();
-                        
+                    SearchAccountDetails.Id = Convert.ToInt32(reader["id"]);
+                    SearchAccountDetails.Username = (string)reader["username"];
+                    SearchAccountDetails.ProfileName = reader["profile_name"].ToString().Trim();
+                    SearchAccountDetails.ProfileDescription = reader["profile_description"].ToString().Trim();
+                    reader.Close();
+                    connection.Close();
+                    connection.Open();
+                    readJournalCommand.Connection = connection;
+                    readJournalCommand.CommandText = $"Select * from dbo.{SearchAccountDetails.Username}Journal";
+                    reader = readJournalCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        SearchJournalDetails = new JournalDetailsModel();
+                        SearchJournalDetails.MovieID = (string)reader["MovieID"];
+                        SearchJournalDetails.MovieTitle = (string)reader["MovieTitle"];
+                        SearchJournalDetails.MovieRating = (string)reader["MovieRating"];
+                        SearchJournalDetails.MovieComments = (string)reader["MovieComments"];
+                        SearchJournalDetails.MovieRuntime = (string)reader["MovieRuntime"];
+                        SearchJournalDetails.MoviePoster = (string)reader["MoviePoster"];
+                        SearchJournalDetailsList.Add(SearchJournalDetails);
+                    }
                 }
+                reader.Close();
+                connection.Close();
+                OtherUserInit(SearchAccountDetails, SearchJournalDetailsList);
+                await _alertService.DisplayAlertAsync("Success", "User found successfully", "Ok");
+
             }
             else
             {
+                reader.Close();
+                connection.Close();
                 await _alertService.DisplayAlertAsync("Error", "This profile name does not exist", "Ok");
             }
+            end:;
 
         }
         public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
         {
+            CurrentUser = true;
+            OtherUser = false;
             TotalTimeWatched = "";
             _newTotal = "";
             AccountDetails = accountDetails;
+            DisplayAccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
             JournalDetailsList = journalDetails;
@@ -176,6 +238,37 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                         _newTotal = "" + Int32.Parse(timeWatched);
                 }
                 
+
+            }
+            TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
+
+        }
+        public void OtherUserInit(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
+        {
+            OtherUser = true;
+            CurrentUser = false;
+            TotalTimeWatched = "";
+            _newTotal = "";
+            DisplayAccountDetails = accountDetails;
+            ProfileNameText = accountDetails.ProfileName;
+            ProfileDescriptionText = accountDetails.ProfileDescription;
+            JournalDetailsList = journalDetails;
+            foreach (var item in JournalDetailsList)
+            {
+
+                string timeWatched = item.MovieRuntime.Replace(" min", "");
+                if (timeWatched == "N/A")
+                {
+
+                }
+                else
+                {
+                    if (_newTotal != "")
+                        _newTotal = "" + (Int32.Parse(_newTotal) + Int32.Parse(timeWatched));
+                    else
+                        _newTotal = "" + Int32.Parse(timeWatched);
+                }
+
 
             }
             TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
