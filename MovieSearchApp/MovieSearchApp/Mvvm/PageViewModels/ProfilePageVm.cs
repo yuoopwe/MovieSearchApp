@@ -133,21 +133,16 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             SqlCommand command = new SqlCommand();
             string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
-            //Check account is made
             connection.Open();
             command.Connection = connection;
-            command.CommandText = $"UPDATE [dbo].[LoginTable] Set profile_name = '{ProfileNameText}' Where id = '{AccountDetails.Id}'; ";
-            command.ExecuteReader();
-            connection.Close();
-            connection.Open();
-            command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = '{SearchText}'";
+            command.CommandText = $"Select profile_name, profile_description from dbo.LoginTable WHERE profile_name = '{SearchText}'";
             reader = command.ExecuteReader();
             if (reader.Read())
             {
-                if (SearchText.Trim() == reader["profile_name"].ToString().Trim())
+                if (SearchText == reader["profile_name"].ToString().Trim())
                 {
-                    ProfileNameText = reader["profile_name"].ToString().Trim();
-                    ProfileDescriptionText = reader["profile_description"].ToString().Trim();
+                    ProfileNameText = reader["profile_name"].ToString();
+                    ProfileDescriptionText = reader["profile_description"].ToString();
                         
                 }
             }
