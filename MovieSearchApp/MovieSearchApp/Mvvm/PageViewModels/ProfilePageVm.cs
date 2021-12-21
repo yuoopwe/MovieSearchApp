@@ -102,6 +102,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public ICommand AddFriendCommand { get; }
 
+        public ICommand ViewJournalCommand { get; }
+
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService, KeyVaultService keyVaultService)
         {
@@ -112,7 +114,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             ChangeProfileNameCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileNameExecute).Build();
             ChangeProfileDescriptionCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileDescriptionExecute).Build();
             UserSearchCommand = new CommandBuilder().SetExecuteAsync(UserSearchExecute).Build();
-            AddFriendCommand = new CommandBuilder().SetExecuteAsync(AddFriendExecute).Build(); 
+            AddFriendCommand = new CommandBuilder().SetExecuteAsync(AddFriendExecute).Build();
+            ViewJournalCommand = new CommandBuilder().SetExecuteAsync(ViewJournalExecute).Build(); 
 
         }
 
@@ -194,8 +197,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
                 FriendsString = $"{FriendsString} {newFriend.Name},";
 
-
-
             var secrets = await _keyVaultService.GetKeysAsync();
          // SqlDataReader reader;
             SqlCommand command = new SqlCommand();
@@ -211,8 +212,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             await _alertService.DisplayAlertAsync("Message", $"You have added {SearchAccountDetails.ProfileName} succesfully! FriendsList string is as follows: {FriendsString}", "Ok");
 
             await GrabStringFromDatabaseAsync(DisplayAccountDetails);
+        }
 
-
+        public async Task ViewJournalExecute()
+        {
+            await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList, DisplayAccountDetails));
         }
 
         //Allows you to search for another users profile
