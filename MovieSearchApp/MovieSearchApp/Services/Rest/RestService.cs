@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -20,23 +21,30 @@ namespace MovieSearchApp.Services.Rest
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> GetAsync<TResponse>(string path)
         {
 
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
+                if (response.IsSuccessStatusCode == true)
+                {
+                    string rawData = await response.Content.ReadAsStringAsync();
+
+                    // Turn our JSON string into a csharp object (or object-graph)
+                    var result = JsonConvert.DeserializeObject<TResponse>(rawData);
+
+                    // Return a response of type TResult.
+                    return (ResultStatus.Success, result, rawData);
+                }
+                else
+                {
+                    return (ResultStatus.Other, default(TResponse), null);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine(ex);
+                throw;
+            }    
            
-            HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
-            var temp = 1;
-            if (response.IsSuccessStatusCode == true)
-            {
-                string rawData = await response.Content.ReadAsStringAsync();
-
-                // Turn our JSON string into a csharp object (or object-graph)
-                var result = JsonConvert.DeserializeObject<TResponse>(rawData);
-
-                // Return a response of type TResult.
-                return (ResultStatus.Success, result, rawData);
-            }
-            else
-            {
-                return (ResultStatus.Other, default(TResponse), null);
-            }
         }
 
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> PostAsync<TRequest, TResponse>(TRequest request, string path)

@@ -1,4 +1,5 @@
-﻿using MovieSearchApp.Models.OMDb;
+﻿using MovieSearchApp.Models.KeyVaultService;
+using MovieSearchApp.Models.OMDb;
 using MovieSearchApp.Services.Rest;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,19 @@ namespace MovieSearchApp.Services
         public OmdbService(IRestService restService, string baseUrl, KeyVaultService keyVaultService)
         {
             _keyVaultService = keyVaultService;
-            var secrets = keyVaultService.GetKeysAsync();
             _restService = restService;
-           // _apiKey = apiKey;
             _baseUrl = baseUrl;
-        }
 
+            //_secretsTask = keyVaultService.GetKeysAsync();
+
+        }
+        //private Task<KeyVaultModel> _secretsTask;
 
         public async Task<MovieCollectionModel> GetAllAsync(string search, int pageCounter)
         {
-            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}");
+            var secrets = await _keyVaultService.GetKeysAsync();
+            
+            var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={secrets.OmdbApiKey}&s={search}&page={pageCounter}");
 
             return result.payload;
         }
@@ -34,6 +38,7 @@ namespace MovieSearchApp.Services
 
         public async Task<MovieCollectionModel> GetSeriesAsync(string search, int pageCounter)
         {
+
             var result = await _restService.GetAsync<MovieCollectionModel>($"{_baseUrl}?apikey={_apiKey}&s={search}&page={pageCounter}&type=series");
 
             return result.payload;
