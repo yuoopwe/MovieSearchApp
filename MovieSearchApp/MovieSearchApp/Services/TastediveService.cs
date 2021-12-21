@@ -9,34 +9,41 @@ namespace MovieSearchApp.Services
 {
     class TastediveService
     {
+        private readonly KeyVaultService _keyVaultService;
         private readonly IRestService _restService;
         private readonly string _apiKey;
         private readonly string _baseUrl;
 
-        public TastediveService(IRestService restService, string apiKey, string baseUrl)
+        public TastediveService(IRestService restService, string baseUrl, KeyVaultService keyVaultService)
         {
-            _restService = restService;
-            _apiKey = apiKey;
+            _keyVaultService = keyVaultService;
+            _restService = restService; 
             _baseUrl = baseUrl;
         }
 
         public async Task<RecommendationModel> GetRecommendationsMovie(string search)
         {
-            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q=movie:{search}&info=1");
+            var secrets = await _keyVaultService.GetKeysAsync();
+
+            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={secrets.TastediveApiKey}&q=movie:{search}&info=1");
 
             return result.payload;
         }
 
         public async Task<RecommendationModel> GetRecommendations(string search)
         {
-            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q={search}&info=1");
+            var secrets = await _keyVaultService.GetKeysAsync();
+
+            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={secrets.TastediveApiKey}&q={search}&info=1");
 
             return result.payload;
         }
 
         public async Task<RecommendationModel> GetRecommendationsByType(string search, string type)
-       { 
-           var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={_apiKey}&q={type}{search}&info=1");
+       {
+            var secrets = await _keyVaultService.GetKeysAsync();
+
+            var result = await _restService.GetAsync<RecommendationModel>($"{_baseUrl}similar?k={secrets.TastediveApiKey}&q={type}{search}&info=1");
 
            return result.payload;
        }
