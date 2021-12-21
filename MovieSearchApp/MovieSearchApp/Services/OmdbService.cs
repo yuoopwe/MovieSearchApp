@@ -9,14 +9,17 @@ namespace MovieSearchApp.Services
 {
     class OmdbService
     {
+        private readonly KeyVaultService _keyVaultService;
         private readonly IRestService _restService;
         private readonly string _apiKey;
         private readonly string _baseUrl;
 
-        public OmdbService(IRestService restService, string apiKey, string baseUrl)
+        public OmdbService(IRestService restService, string baseUrl, KeyVaultService keyVaultService)
         {
+            _keyVaultService = keyVaultService;
+            var secrets = keyVaultService.GetKeysAsync();
             _restService = restService;
-            _apiKey = apiKey;
+           // _apiKey = apiKey;
             _baseUrl = baseUrl;
         }
 

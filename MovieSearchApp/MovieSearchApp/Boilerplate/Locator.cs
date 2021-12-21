@@ -13,6 +13,7 @@ using MovieSearchApp.Services.Alert_Service;
 using System;
 using MovieSearchApp.Mvvm.Pages.PopularPage;
 using MovieSearchApp.Mvvm.Pages.PopularPageFolder;
+using System.Collections.Generic;
 
 namespace MovieSearchApp.Boilerplate
 {
@@ -22,9 +23,10 @@ namespace MovieSearchApp.Boilerplate
     public class Locator
 	{
 		private Container _IoCC;
-
 		internal Locator(Application currentApplication)
 		{
+			
+
 			// Create the IoC container that will contain all our configurable classes ...
 			_IoCC = new Container();
 
@@ -81,6 +83,7 @@ namespace MovieSearchApp.Boilerplate
 
 			// Tell the IoC container about our Services!!!.
 			_IoCC.Register<IRestService>(GetRestService, Lifestyle.Singleton);
+			_IoCC.Register<KeyVaultService>(GetKeyVaultService, Lifestyle.Singleton);
 			_IoCC.Register<OmdbService>(GetOmdbService, Lifestyle.Singleton);
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
@@ -88,29 +91,35 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<PasswordHasherService>(GetPasswordHasherService, Lifestyle.Singleton);
 			
 
+            
+
 
 		}
 
-        private IAlertService GetAlertService()
+		private IAlertService GetAlertService()
         {
 			return new AlertService();
         }
 
         private OmdbService GetOmdbService()
 		{
-			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbApiKey, ApiConstants.OmdbBaseApiUrl);
+			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbBaseApiUrl, _IoCC.GetInstance<KeyVaultService>());
 		}
 		private ThemoviedbService GetTheMovieDbService()
 		{
-			return new ThemoviedbService(_IoCC.GetInstance<IRestService>(), ApiConstants.TheMovieDbApiKey, ApiConstants.TheMovieDbBaseApiUrl);
+			return new ThemoviedbService(_IoCC.GetInstance<IRestService>(),ApiConstants.TheMovieDbBaseApiUrl);
 		}
 		private TastediveService GetTastediveService()
 		{
-			return new TastediveService(_IoCC.GetInstance<IRestService>(), ApiConstants.TastediveApiKey, ApiConstants.TastediveBaseApiUrl);
+			return new TastediveService(_IoCC.GetInstance<IRestService>(), ApiConstants.TastediveBaseApiUrl);
 		}
 		private PasswordHasherService GetPasswordHasherService()
 		{
 			return new PasswordHasherService(_IoCC.GetInstance<IRestService>());
+		}
+		private KeyVaultService GetKeyVaultService()
+		{
+			return new KeyVaultService(_IoCC.GetInstance<IRestService>());
 		}
 
 

@@ -13,10 +13,10 @@ namespace MovieSearchApp.Services
         private readonly string _apiKey;
         private readonly string _baseUrl;
 
-        public ThemoviedbService(IRestService restService, string apiKey, string baseUrl)
+        public ThemoviedbService(IRestService restService, string baseUrl)
         {
             _restService = restService;
-            _apiKey = apiKey;
+          //  _apiKey = apiKey;
             _baseUrl = baseUrl;
         }
 

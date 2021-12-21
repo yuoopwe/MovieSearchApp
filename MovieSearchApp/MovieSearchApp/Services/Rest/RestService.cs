@@ -22,7 +22,7 @@ namespace MovieSearchApp.Services.Rest
 
            
             HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
-
+            var temp = 1;
             if (response.IsSuccessStatusCode == true)
             {
                 string rawData = await response.Content.ReadAsStringAsync();
