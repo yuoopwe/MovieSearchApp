@@ -27,15 +27,15 @@
                 </Grid>
                 <Grid Grid.Column="1" RowDefinitions="Auto,Auto">
                     <Label Text="Friends" FontSize="20" HorizontalOptions="Center" Grid.Row="0"/>
-                    <Grid>
+                    <Grid Grid.Row="1">
                         <ListView x:Name="SearchItemList" ItemsSource="{Binding FriendsObjectList}" BackgroundColor="#LightSlateGray">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
-                                        <Grid x:Name="Item" Padding="20,20,20,20" ColumnDefinitions="Auto,*">
-                                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100,Auto" Padding="5,0,5,0" Grid.Column="1">
-                                                <Label Text="{Binding Name}"/>
-                                                <Button Text="Go to profile"/>
+                                        <Grid x:Name="Item" Padding="20,20,20,20">
+                                            <Grid RowDefinitions="Auto,Auto" Padding="5,0,5,0" ColumnDefinitions="Auto,Auto">
+                                                <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0"/>
+                                                <Button Text="Go to profile" Grid.Row="0" Grid.Column="1"/>
                                             </Grid>
                                         </Grid>
                                     </ViewCell>
@@ -52,7 +52,7 @@
 
 
             <Button Text="Add to friendlist" Grid.Column="0" Command="{Binding AddFriendCommand}" IsVisible="{Binding OtherUser}"/>
-                <Button Text="View Journal Page" Grid.Column="1" IsVisible="{Binding OtherUser}"/>
+            <Button Text="View Journal Page" Grid.Column="1" Command="{Binding ViewJournalCommand}" IsVisible="{Binding OtherUser}"/>
 
             </Grid>
             
