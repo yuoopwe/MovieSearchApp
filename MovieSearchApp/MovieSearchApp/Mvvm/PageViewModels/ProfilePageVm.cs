@@ -3,6 +3,7 @@ using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
+using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class ProfilePageVm : MvvmZeroBaseVm
     {
+        private readonly KeyVaultService _keyVaultService;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
         private string _profileDescriptionText;
@@ -75,9 +77,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand UserSearchCommand { get; }
 
 
-        public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService)
+        public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService, KeyVaultService keyVaultService)
         {
-
+            _keyVaultService = keyVaultService;
             _alertService = alertService;
             _pageService = pageService;
             ChangeProfileNameCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileNameExecute).Build();
@@ -88,9 +90,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task ChangeProfileDescriptionExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlDataReader reader;
             SqlCommand command = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             //Check account is made
             connection.Open();
@@ -119,9 +122,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public async Task ChangeProfileNameExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlDataReader reader;
             SqlCommand command = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             //Check account is made
             connection.Open();
@@ -151,13 +155,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         //Allows you to search for another users profile
         public async Task UserSearchExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SearchAccountDetails = new AccountDetailsModel();
             SearchJournalDetailsList = new List<JournalDetailsModel>();
-
             SqlDataReader reader;
             SqlCommand command = new SqlCommand();
             SqlCommand readJournalCommand = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             command.Connection = connection;
