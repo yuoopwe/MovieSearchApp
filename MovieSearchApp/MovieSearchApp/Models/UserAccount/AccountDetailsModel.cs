@@ -11,6 +11,7 @@ namespace MovieSearchApp.Models
         public string ProfileName { get; set; }
         public string ProfileDescription { get; set; }
         public bool IsLoggedIn { get; set; }
+        public string FriendsListString { get; set; }
 
     }
 }
