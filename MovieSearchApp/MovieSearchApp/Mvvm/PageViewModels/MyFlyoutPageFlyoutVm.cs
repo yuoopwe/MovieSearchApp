@@ -95,7 +95,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             else
             {
                 await _pageService.PopToRootAsync();
-                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
+                await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>(async(vm) => await vm.InitAsync(AccountDetails, JournalDetailsList));
             }
             
         }

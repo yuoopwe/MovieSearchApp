@@ -220,6 +220,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     AccountDetails.Id = Convert.ToInt32(dr["id"]);
                     AccountDetails.ProfileName = dr["profile_name"].ToString().Trim();
                     AccountDetails.ProfileDescription = dr["profile_description"].ToString().Trim();
+                    AccountDetails.FriendsListString = dr["FriendsListString"].ToString().Trim();
                     AccountDetails.Username = UsernameText.Trim();
                     AccountDetails.IsLoggedIn = true;
                     dr.Close();

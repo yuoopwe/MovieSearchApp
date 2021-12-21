@@ -20,7 +20,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class ProfilePageVm : MvvmZeroBaseVm
     {
-
         private readonly KeyVaultService _keyVaultService;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
@@ -31,9 +30,24 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _searchText;
         private bool _otherUser;
         private bool _currentUser;
-        private string _newFriendsListString;
+        private string _friendsString;
+        private int _friendsCount;
 
-        private ObservableCollection<FriendsDetailsModel> _FriendsObjectList; 
+
+        public int FriendsCount
+        {
+            get => _friendsCount;
+            set => SetProperty(ref _friendsCount, value);
+        }
+        private ObservableCollection<FriendsDetailsModel> _FriendsObjectList;
+
+        public string FriendsString
+        {
+            get => _friendsString;
+            set => SetProperty(ref _friendsString, value);
+        }
+
+
         public ObservableCollection<FriendsDetailsModel> FriendsObjectList
         {
             get => _FriendsObjectList;
@@ -43,11 +57,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public List<JournalDetailsModel> SearchJournalDetailsList { get; set; }
         public JournalDetailsModel SearchJournalDetails { get; set; }
 
-        public string NewFriendsListString
-        {
-            get => _newFriendsListString;
-            set => SetProperty(ref _newFriendsListString, value);
-        }
         public bool OtherUser
         {
             get => _otherUser;
@@ -177,14 +186,34 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             FriendsDetailsModel newFriend = new FriendsDetailsModel();
             newFriend.Name = SearchAccountDetails.ProfileName;
-            FriendsObjectList.Add(newFriend); 
+            // FriendsObjectList.Add(newFriend);
+            await GrabStringFromDatabaseAsync(AccountDetails);
 
-            NewFriendsListString = SearchAccountDetails.ProfileName;
-            await _alertService.DisplayAlertAsync("Message", $"You have added {SearchAccountDetails.ProfileName} succesfully!", "Ok");
+            if (FriendsString == "")
+                FriendsString = $"{newFriend.Name},";
+            else
+                FriendsString = $"{FriendsString} {newFriend.Name},";
 
-            
+
+
+            var secrets = await _keyVaultService.GetKeysAsync();
+         // SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            string connectionString = secrets.ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            //Check account is made
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"UPDATE [dbo].[LoginTable] Set FriendsListString = '{FriendsString}' Where id = '{AccountDetails.Id}'; ";
+            command.ExecuteReader();
+            connection.Close();
+
+            await _alertService.DisplayAlertAsync("Message", $"You have added {SearchAccountDetails.ProfileName} succesfully! FriendsList string is as follows: {FriendsString}", "Ok");
+
+            await GrabStringFromDatabaseAsync(DisplayAccountDetails);
+
+
         }
-
 
         //Allows you to search for another users profile
         public async Task UserSearchExecute()
@@ -237,8 +266,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 }
                 reader.Close();
                 connection.Close();
-                OtherUserInit(SearchAccountDetails, SearchJournalDetailsList);
+                await OtherUserInitAsync(SearchAccountDetails, SearchJournalDetailsList);
                 await _alertService.DisplayAlertAsync("Success", "User found successfully", "Ok");
+
 
             }
             else
@@ -250,8 +280,29 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             end:;
 
         }
-        public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
+
+        public async Task GrabStringFromDatabaseAsync(AccountDetailsModel accountdetails)
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
+            SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            string connectionString = secrets.ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            //Check account is made
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{accountdetails.Id}'";
+            reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                FriendsString = reader["FriendsListString"].ToString().Trim();                  
+            }
+       
+        }
+
+        public async Task InitAsync(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
+        {
+            FriendsObjectList.Clear();
             CurrentUser = true;
             OtherUser = false;
             TotalTimeWatched = "";
@@ -261,8 +312,22 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
             JournalDetailsList = journalDetails;
-            
 
+            
+            await GrabStringFromDatabaseAsync(AccountDetails);
+
+            List<string> friendsTempString = new List<string>(); 
+            friendsTempString = FriendsString.Split(',').ToList();
+            foreach(var item in friendsTempString)
+            {
+                FriendsDetailsModel newFriend = new FriendsDetailsModel();
+                newFriend.Name = item;
+                FriendsObjectList.Add(newFriend);
+            }
+
+            FriendsObjectList.RemoveAt(FriendsObjectList.Count - 1); 
+
+            FriendsCount = FriendsObjectList.Count;
 
             foreach (var item in JournalDetailsList)
             {
@@ -285,8 +350,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
 
         }
-        public void OtherUserInit(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
+        public async Task OtherUserInitAsync(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
         {
+            FriendsObjectList.Clear();
             OtherUser = true;
             CurrentUser = false;
             TotalTimeWatched = "";
@@ -294,10 +360,41 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             DisplayAccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
-            
-
-
             JournalDetailsList = journalDetails;
+
+            await GrabStringFromDatabaseAsync(DisplayAccountDetails);
+
+            List<string> friendsTempString = new List<string>();
+            friendsTempString = FriendsString.Split(',').ToList();
+            foreach (var item in friendsTempString)
+            {
+                FriendsDetailsModel newFriend = new FriendsDetailsModel();
+                newFriend.Name = item;
+                FriendsObjectList.Add(newFriend);
+            }
+
+            FriendsCount = FriendsObjectList.Count;
+
+            foreach (var item in JournalDetailsList)
+            {
+
+                string timeWatched = item.MovieRuntime.Replace(" min", "");
+                if (timeWatched == "N/A")
+                {
+
+                }
+                else
+                {
+                    if (_newTotal != "")
+                        _newTotal = "" + (Int32.Parse(_newTotal) + Int32.Parse(timeWatched));
+                    else
+                        _newTotal = "" + Int32.Parse(timeWatched);
+                }
+
+
+            }
+
+
             foreach (var item in JournalDetailsList)
             {
 
