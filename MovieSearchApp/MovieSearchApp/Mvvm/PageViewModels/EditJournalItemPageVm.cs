@@ -3,6 +3,7 @@ using FunctionZero.MvvmZero;
 using MovieSearchApp.Models;
 using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
+using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class EditJournalItemPageVm : MvvmZeroBaseVm
     {
+        private readonly KeyVaultService _keyVaultService;
         private IAlertService _alertService;
         private IPageServiceZero _pageService;
         private MyFlyoutPageFlyoutVm _flyoutVm;
@@ -48,9 +50,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public ICommand SaveCommand { get; }
 
-        public EditJournalItemPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
+        public EditJournalItemPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, KeyVaultService keyVaultService)
         {
-
+            _keyVaultService = keyVaultService;
             _alertService = alertService;
             _pageService = pageService;
             _flyoutVm = flyoutVm;
@@ -61,10 +63,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task SaveExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlDataReader reader;
             SqlCommand updateJournalCommand = new SqlCommand();
             SqlCommand checkJournalCommand = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             updateJournalCommand.Connection = connection;

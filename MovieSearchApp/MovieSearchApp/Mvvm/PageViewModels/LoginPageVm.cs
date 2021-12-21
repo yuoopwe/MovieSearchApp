@@ -20,6 +20,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _passwordText;
         private string _usernameText;
         private readonly MyFlyoutPageFlyoutVm _flyoutVm;
+        private readonly KeyVaultService _keyVaultService;
         private readonly PasswordHasherService _passwordHasher;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
@@ -74,8 +75,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ImageSource EyeIconOpen { get; set; }
         public ImageSource EyeIconClosed { get; set; }
 
-        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, PasswordHasherService passwordHasher)
+        public LoginPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, PasswordHasherService passwordHasher, KeyVaultService keyVaultService)
         {
+            _keyVaultService = keyVaultService;
             _passwordHasher = passwordHasher;
             _alertService = alertService;
             _pageService = pageService;
@@ -122,11 +124,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task RegisterExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlDataReader reader;
             SqlCommand checkAccountCommand = new SqlCommand();
             SqlCommand makeAccountCommand = new SqlCommand();
             SqlCommand createJournalCommand = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             //Check account is made
             connection.Open();
@@ -196,12 +199,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         public async Task LoginExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             JournalDetailsList = new List<JournalDetailsModel>();
             AccountDetails = new AccountDetailsModel();
             SqlConnection connection = new SqlConnection();
             SqlCommand checkAccountCommand = new SqlCommand();
             SqlCommand readJournalCommand = new SqlCommand();
-            connection.ConnectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            connection.ConnectionString = secrets.ConnectionString;
             connection.Open();
             checkAccountCommand.Connection = connection;
             checkAccountCommand.CommandText = $"Select * from dbo.LoginTable WHERE username = @Username";

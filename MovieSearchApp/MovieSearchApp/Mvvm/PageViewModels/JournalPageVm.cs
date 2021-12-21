@@ -20,6 +20,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class JournalPageVm : MvvmZeroBaseVm
     {
+        private KeyVaultService _keyVaultService;
         private IAlertService _alertService;
         private IPageServiceZero _pageService;
         private OmdbService _omdbService; 
@@ -49,9 +50,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
 
 
-        public JournalPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, OmdbService omdbService)
+        public JournalPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, OmdbService omdbService, KeyVaultService keyVaultService)
         {
-
+            _keyVaultService = keyVaultService;
             _alertService = alertService;
             _pageService = pageService;
             _flyoutVm = flyoutVm;
@@ -83,10 +84,11 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async  Task DeleteItemExecute(object item1)
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             JournalDetailsModel item2 = item1 as JournalDetailsModel;
             SqlDataReader reader;
             SqlCommand deleteDbCommand = new SqlCommand();
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             deleteDbCommand.Connection = connection;

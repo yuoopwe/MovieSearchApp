@@ -6,6 +6,7 @@ using MovieSearchApp.Models.Tastedive;
 using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Mvvm.Pages.PopularPage;
+using MovieSearchApp.Services;
 using MovieSearchApp.Services.Alert_Service;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public List<JournalDetailsModel> JournalDetailsList { get; set; }
         public RecommendationModel RecommendationResult { get; set; }
 
-
-
+        private readonly KeyVaultService _keyVaultService;
         private IAlertService _alertService;
         private IPageServiceZero _pageService;
         private MyFlyoutPageFlyoutVm _flyoutVm;
@@ -59,9 +59,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _moviePoster, value);
         }
 
-        public AddToListPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm)
+        public AddToListPageVm(IPageServiceZero pageService, IAlertService alertService, MyFlyoutPageFlyoutVm flyoutVm, KeyVaultService keyVaultService)
         {
-
+            _keyVaultService = keyVaultService;
             _alertService = alertService;
             _pageService = pageService;
             _flyoutVm = flyoutVm;
@@ -72,11 +72,12 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task SaveExecute()
         {
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlDataReader reader;
             SqlCommand addToJournalCommand = new SqlCommand();
             SqlCommand checkJournalCommand = new SqlCommand();
 
-            string connectionString = ConfigurationManager.ConnectionStrings["Test"].ConnectionString;
+            string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             addToJournalCommand.Connection = connection;
