@@ -13,11 +13,14 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class ProfilePageVm : MvvmZeroBaseVm
     {
+
         private readonly KeyVaultService _keyVaultService;
         private readonly IAlertService _alertService;
         private readonly IPageServiceZero _pageService;
@@ -28,10 +31,23 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private string _searchText;
         private bool _otherUser;
         private bool _currentUser;
+        private string _newFriendsListString;
 
+        private ObservableCollection<FriendsDetailsModel> _FriendsObjectList; 
+        public ObservableCollection<FriendsDetailsModel> FriendsObjectList
+        {
+            get => _FriendsObjectList;
+            set => SetProperty(ref _FriendsObjectList, value);
+        }
         public AccountDetailsModel SearchAccountDetails { get; set; }
         public List<JournalDetailsModel> SearchJournalDetailsList { get; set; }
         public JournalDetailsModel SearchJournalDetails { get; set; }
+
+        public string NewFriendsListString
+        {
+            get => _newFriendsListString;
+            set => SetProperty(ref _newFriendsListString, value);
+        }
         public bool OtherUser
         {
             get => _otherUser;
@@ -42,7 +58,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             get => _currentUser;
             set => SetProperty(ref _currentUser, value);
         }
-
 
         public string SearchText
         {
@@ -76,18 +91,23 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public ICommand UserSearchCommand { get; }
 
+        public ICommand AddFriendCommand { get; }
+
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService, KeyVaultService keyVaultService)
         {
             _keyVaultService = keyVaultService;
             _alertService = alertService;
             _pageService = pageService;
+            FriendsObjectList = new ObservableCollection<FriendsDetailsModel>();
             ChangeProfileNameCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileNameExecute).Build();
             ChangeProfileDescriptionCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileDescriptionExecute).Build();
             UserSearchCommand = new CommandBuilder().SetExecuteAsync(UserSearchExecute).Build();
+            AddFriendCommand = new CommandBuilder().SetExecuteAsync(AddFriendExecute).Build(); 
 
         }
 
+        #region CHANGING PROFILE NAME & CHANGING PROFILE DESCRIPTION
         public async Task ChangeProfileDescriptionExecute()
         {
             var secrets = await _keyVaultService.GetKeysAsync();
@@ -151,6 +171,20 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
 
         }
+        #endregion
+
+        public async Task AddFriendExecute()
+        {
+            FriendsDetailsModel newFriend = new FriendsDetailsModel();
+            newFriend.Name = SearchAccountDetails.ProfileName;
+            FriendsObjectList.Add(newFriend); 
+
+            NewFriendsListString = SearchAccountDetails.ProfileName;
+            await _alertService.DisplayAlertAsync("Message", $"You have added {SearchAccountDetails.ProfileName} succesfully!", "Ok");
+
+            
+        }
+
 
         //Allows you to search for another users profile
         public async Task UserSearchExecute()
@@ -182,6 +216,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     SearchAccountDetails.Username = (string)reader["username"];
                     SearchAccountDetails.ProfileName = reader["profile_name"].ToString().Trim();
                     SearchAccountDetails.ProfileDescription = reader["profile_description"].ToString().Trim();
+                    SearchAccountDetails.FriendsListString = reader["FriendsListString"].ToString().Trim(); 
                     reader.Close();
                     connection.Close();
                     connection.Open();
@@ -226,6 +261,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
             JournalDetailsList = journalDetails;
+            
+
+
             foreach (var item in JournalDetailsList)
             {
                 
@@ -256,6 +294,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             DisplayAccountDetails = accountDetails;
             ProfileNameText = accountDetails.ProfileName;
             ProfileDescriptionText = accountDetails.ProfileDescription;
+            
+
+
             JournalDetailsList = journalDetails;
             foreach (var item in JournalDetailsList)
             {
