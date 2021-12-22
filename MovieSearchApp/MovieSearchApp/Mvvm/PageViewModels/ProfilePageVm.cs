@@ -203,7 +203,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             command.Connection = connection;
             command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = @Username";
             command.Parameters.Add("@Username", SqlDbType.NVarChar);
-            command.Parameters["@Username"].Value = item1.Name;
+            command.Parameters["@Username"].Value = item1.Name.Trim();
             if (SearchText.Trim().ToLower() == AccountDetails.ProfileName.ToLower())
             {
                 await _alertService.DisplayAlertAsync("Failure", "You cannot search your own profile name", "Ok");
@@ -301,7 +301,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             command.Connection = connection;
             command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = @Username";
             command.Parameters.Add("@Username", SqlDbType.NVarChar);
-            command.Parameters["@Username"].Value = SearchText;
+            command.Parameters["@Username"].Value = SearchText.Trim();
             if(SearchText.Trim().ToLower() == AccountDetails.ProfileName.ToLower())
             {
                 await _alertService.DisplayAlertAsync("Failure", "You cannot search your own profile name", "Ok");
