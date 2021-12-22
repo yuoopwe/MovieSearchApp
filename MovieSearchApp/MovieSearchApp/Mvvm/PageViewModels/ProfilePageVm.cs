@@ -103,6 +103,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand AddFriendCommand { get; }
 
         public ICommand ViewJournalCommand { get; }
+        public ICommand GoToProfileCommand { get; }
+
 
 
         public ProfilePageVm(IPageServiceZero pageService, IAlertService alertService, KeyVaultService keyVaultService)
@@ -115,7 +117,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             ChangeProfileDescriptionCommand = new CommandBuilder().SetExecuteAsync(ChangeProfileDescriptionExecute).Build();
             UserSearchCommand = new CommandBuilder().SetExecuteAsync(UserSearchExecute).Build();
             AddFriendCommand = new CommandBuilder().SetExecuteAsync(AddFriendExecute).Build();
-            ViewJournalCommand = new CommandBuilder().SetExecuteAsync(ViewJournalExecute).Build(); 
+            ViewJournalCommand = new CommandBuilder().SetExecuteAsync(ViewJournalExecute).Build();
+            GoToProfileCommand = new CommandBuilder().SetExecuteAsync(GoToProfileExecute).Build();
 
         }
 
@@ -185,6 +188,70 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         }
         #endregion
 
+        public async Task GoToProfileExecute(object item)
+        {
+            FriendsDetailsModel item1 = item as FriendsDetailsModel;
+            var secrets = await _keyVaultService.GetKeysAsync();
+            SearchAccountDetails = new AccountDetailsModel();
+            SearchJournalDetailsList = new List<JournalDetailsModel>();
+            SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            SqlCommand readJournalCommand = new SqlCommand();
+            string connectionString = secrets.ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = @Username";
+            command.Parameters.Add("@Username", SqlDbType.NVarChar);
+            command.Parameters["@Username"].Value = item1.Name;
+            if (SearchText.Trim().ToLower() == AccountDetails.ProfileName.ToLower())
+            {
+                await _alertService.DisplayAlertAsync("Failure", "You cannot search your own profile name", "Ok");
+                goto end;
+            }
+            reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                if (SearchText.ToLower() == reader["profile_name"].ToString().Trim().ToLower())
+                {
+                    SearchAccountDetails.Id = Convert.ToInt32(reader["id"]);
+                    SearchAccountDetails.Username = (string)reader["username"];
+                    SearchAccountDetails.ProfileName = reader["profile_name"].ToString().Trim();
+                    SearchAccountDetails.ProfileDescription = reader["profile_description"].ToString().Trim();
+                    SearchAccountDetails.FriendsListString = reader["FriendsListString"].ToString().Trim();
+                    reader.Close();
+                    connection.Close();
+                    connection.Open();
+                    readJournalCommand.Connection = connection;
+                    readJournalCommand.CommandText = $"Select * from dbo.{SearchAccountDetails.Username}Journal";
+                    reader = readJournalCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        SearchJournalDetails = new JournalDetailsModel();
+                        SearchJournalDetails.MovieID = (string)reader["MovieID"];
+                        SearchJournalDetails.MovieTitle = (string)reader["MovieTitle"];
+                        SearchJournalDetails.MovieRating = (string)reader["MovieRating"];
+                        SearchJournalDetails.MovieComments = (string)reader["MovieComments"];
+                        SearchJournalDetails.MovieRuntime = (string)reader["MovieRuntime"];
+                        SearchJournalDetails.MoviePoster = (string)reader["MoviePoster"];
+                        SearchJournalDetailsList.Add(SearchJournalDetails);
+                    }
+                }
+                reader.Close();
+                connection.Close();
+                await OtherUserInitAsync(SearchAccountDetails, SearchJournalDetailsList);
+                await _alertService.DisplayAlertAsync("Success", "User found successfully", "Ok");
+
+
+            }
+            else
+            {
+                reader.Close();
+                connection.Close();
+                await _alertService.DisplayAlertAsync("Error", "This profile name does not exist", "Ok");
+            }
+        end:;
+        }
         public async Task AddFriendExecute()
         {
             FriendsDetailsModel newFriend = new FriendsDetailsModel();
@@ -378,6 +445,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
 
             FriendsCount = FriendsObjectList.Count;
+            FriendsObjectList.RemoveAt(FriendsObjectList.Count - 1);
 
             foreach (var item in JournalDetailsList)
             {

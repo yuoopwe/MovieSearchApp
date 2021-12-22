@@ -28,14 +28,14 @@
                 <Grid Grid.Column="1" RowDefinitions="Auto,Auto">
                     <Label Text="Friends" FontSize="20" HorizontalOptions="Center" Grid.Row="0"/>
                     <Grid Grid.Row="1">
-                        <ListView x:Name="SearchItemList" ItemsSource="{Binding FriendsObjectList}" BackgroundColor="#LightSlateGray">
+                        <ListView x:Name="SearchFriendList" ItemsSource="{Binding FriendsObjectList}" BackgroundColor="#LightSlateGray">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
                                         <Grid x:Name="Item" Padding="20,20,20,20">
                                             <Grid RowDefinitions="Auto,Auto" Padding="5,0,5,0" ColumnDefinitions="Auto,Auto">
                                                 <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0"/>
-                                                <Button Text="Go to profile" Grid.Row="0" Grid.Column="1"/>
+                                                <Button Grid.Column="1" Text="View Profile" BackgroundColor="White" BindingContext="{Binding Source={x:Reference SearchFriendList}, Path=BindingContext}" Command="{Binding GoToProfileCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
                                             </Grid>
                                         </Grid>
                                     </ViewCell>
