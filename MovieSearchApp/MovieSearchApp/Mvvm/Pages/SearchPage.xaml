@@ -14,7 +14,7 @@
                 <Button Text="Search" Command="{Binding SearchCommand}" Grid.Column="1" BackgroundColor="#2E333A" TextColor="White"/>
             </Grid>
             <StackLayout Grid.Row="3">
-                <ListView x:Name="SearchItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieObjectList}" BackgroundColor="#2E333A" >
+                <ListView x:Name="SearchItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding MovieObjectList}" BackgroundColor="#2E333A" VerticalOptions="FillAndExpand" HasUnevenRows="True" SeparatorVisibility="None" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
