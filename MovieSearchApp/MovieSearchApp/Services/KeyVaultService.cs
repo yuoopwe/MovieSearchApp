@@ -26,7 +26,7 @@ namespace MovieSearchApp.Services
         {
             if (_keys == null)
             {
-                var result = await _restService.GetAsync<KeyVaultModel>($"http://movieappfunction.azurewebsites.net/api/Function1?code=Feka5i8Z/anvdUQMErpUggXazQaJcMlPGIu2nkJin8CizYT7MEw/0w==");
+                var result = await _restService.GetAsync<KeyVaultModel>($"https://movieappfunction.azurewebsites.net/api/Function1?code=Feka5i8Z/anvdUQMErpUggXazQaJcMlPGIu2nkJin8CizYT7MEw/0w==");
 
                 if (result.status == ResultStatus.Success)
                 {

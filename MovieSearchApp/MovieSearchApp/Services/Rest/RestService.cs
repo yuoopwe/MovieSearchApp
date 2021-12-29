@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -19,10 +21,18 @@ namespace MovieSearchApp.Services.Rest
 
         public async Task<(ResultStatus status, TResponse payload, string rawResponse)> GetAsync<TResponse>(string path)
         {
-
-           
-            HttpResponseMessage response = await _httpClient.GetAsync(Sanitise(path));
-
+            HttpResponseMessage response = null;
+            try
+            {
+                response = await _httpClient.GetAsync(Sanitise(path));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                
+            }
+            
+            
             if (response.IsSuccessStatusCode == true)
             {
                 string rawData = await response.Content.ReadAsStringAsync();
