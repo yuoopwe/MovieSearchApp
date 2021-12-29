@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MovieSearchApp.Mvvm.Pages.JournalPage">
     <ContentPage.Content>
-        <ListView x:Name="JournalItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding JournalDetailsList}" BackgroundColor="#2E333A" >
+        <ListView x:Name="JournalItemList" SelectedItem="{Binding Display, Mode=TwoWay}" ItemsSource="{Binding JournalDetailsList}" BackgroundColor="#2E333A" VerticalOptions="FillAndExpand" HasUnevenRows="True" SeparatorVisibility="None">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid x:Name="Item" Padding="20,20,20,20" ColumnDefinitions="Auto,*">
+                        <Grid x:Name="Item" Padding="20,20,20,20" ColumnDefinitions="*,*">
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,100,Auto,Auto" Padding="5,0,5,0" Grid.Column="1">
                                 <Label Text="Title" Grid.Row="0" FontSize="20" TextColor="LightBlue"/>
                                 <Label Text="{Binding MovieTitle}" TextColor="FloralWhite" Grid.Row="1"/>
@@ -16,9 +16,9 @@
                                 <Label Text="Rating" FontSize="20" TextColor="LightBlue" Grid.Row="4"/>
                                 <Label Text="{Binding MovieRating}" FontSize="20" TextColor="FloralWhite" Grid.Row="5"/>
                                 <Button Grid.Row="6" Text="Get Details" BackgroundColor="White" BindingContext="{Binding Source={x:Reference JournalItemList}, Path=BindingContext}" Command="{Binding GetDetailsCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
-                                <Grid ColumnDefinitions="*,*" Grid.Row="7">
-                                    <Button Grid.Column="0" Text="Delete Item" BackgroundColor="White" BindingContext="{Binding Source={x:Reference JournalItemList}, Path=BindingContext}" Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
-                                    <Button Grid.Column="1" Text="Edit Item" BackgroundColor="White" BindingContext="{Binding Source={x:Reference JournalItemList}, Path=BindingContext}" Command="{Binding EditItemCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                <Grid ColumnDefinitions="*,*" Grid.Row="7" RowDefinitions="62">
+                                    <Button Grid.Column="0" Grid.Row="0" Text="Delete Item" BackgroundColor="White" BindingContext="{Binding Source={x:Reference JournalItemList}, Path=BindingContext}" Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                    <Button Grid.Column="1" Grid.Row="0" Text="Edit Item" BackgroundColor="White" BindingContext="{Binding Source={x:Reference JournalItemList}, Path=BindingContext}" Command="{Binding EditItemCommand}" CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
                                 </Grid>
                             </Grid>
                             <Image Source="{Binding MoviePoster}" Grid.Column="0" WidthRequest="210" HeightRequest="300" />

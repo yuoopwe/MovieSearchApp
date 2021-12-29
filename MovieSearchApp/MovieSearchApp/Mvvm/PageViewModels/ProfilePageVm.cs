@@ -204,15 +204,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             command.CommandText = $"Select * from dbo.LoginTable WHERE profile_name = @Username";
             command.Parameters.Add("@Username", SqlDbType.NVarChar);
             command.Parameters["@Username"].Value = item1.Name.Trim();
-            if (SearchText.Trim().ToLower() == AccountDetails.ProfileName.ToLower())
+            reader = command.ExecuteReader();
+            if (item1.Name.Trim() == AccountDetails.ProfileName.Trim())
             {
-                await _alertService.DisplayAlertAsync("Failure", "You cannot search your own profile name", "Ok");
+                await _alertService.DisplayAlertAsync("Warning", "You can't search your own profile", "Ok");
                 goto end;
             }
-            reader = command.ExecuteReader();
             if (reader.Read())
             {
-                if (SearchText.ToLower() == reader["profile_name"].ToString().Trim().ToLower())
+                if (item1.Name.Trim().ToLower() == reader["profile_name"].ToString().Trim().ToLower())
                 {
                     SearchAccountDetails.Id = Convert.ToInt32(reader["id"]);
                     SearchAccountDetails.Username = (string)reader["username"];
@@ -275,8 +275,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             command.CommandText = $"UPDATE [dbo].[LoginTable] Set FriendsListString = '{FriendsString}' Where id = '{AccountDetails.Id}'; ";
             command.ExecuteReader();
             connection.Close();
-
-            await _alertService.DisplayAlertAsync("Message", $"You have added {SearchAccountDetails.ProfileName} succesfully! FriendsList string is as follows: {FriendsString}", "Ok");
 
             await GrabStringFromDatabaseAsync(DisplayAccountDetails);
         }

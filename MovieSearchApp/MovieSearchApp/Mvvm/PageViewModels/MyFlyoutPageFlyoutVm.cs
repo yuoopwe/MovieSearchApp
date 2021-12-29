@@ -66,7 +66,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             AccountDetails.IsLoggedIn = false;
 
 
-            tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
+            //tgBtn = ImageSource.FromResource("MovieSearchApp.Images.menu96.png");
             MenuItems = new ObservableCollection<FlyoutMenuModel>(new[]
             {
                     new FlyoutMenuModel { Id = 0, Title = "Search" , Command=SearchPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.search1.png")},
@@ -74,7 +74,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new FlyoutMenuModel { Id = 2, Title = "Journal", Command=JournalPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.Journal.png") },
                     new FlyoutMenuModel { Id = 3, Title = "Profile" , Command=ProfilePageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.profile1.png")},
                     new FlyoutMenuModel { Id = 4, Title = "Settings", Command=SettingsPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.Settings1.png") },
-                    new FlyoutMenuModel { Id = 5, Title = "Sign out", Command=LoginPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
+                    new FlyoutMenuModel { Id = 5, Title = "Account", Command=LoginPageCommand, Icon=ImageSource.FromResource("MovieSearchApp.Images.signout.png") },
 
                 });
 

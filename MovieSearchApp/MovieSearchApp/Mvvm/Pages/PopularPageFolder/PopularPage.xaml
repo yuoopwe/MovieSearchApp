@@ -20,11 +20,8 @@
             <Grid Grid.Row="2" ColumnDefinitions="Auto,80,*,Auto,80,*">
                 <Switch Grid.Column="1" IsToggled="{Binding AgeRatingVisible, Mode=TwoWay}"/>
                 <Label Text="Age Rating Filter" Grid.Column="0" VerticalOptions="Center"/>
-                <Picker Grid.Column="2" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}" BackgroundColor="White"/>
                 <Switch Grid.Column="4" IsToggled="{Binding LanguageVisible, Mode=TwoWay}" />
                 <Label Text="Language Filter" Grid.Column="3" VerticalOptions="Center"/>
-                <Picker Grid.Column="5" ItemsSource="{Binding LanguageList}" ItemDisplayBinding="{Binding LanguageName}" BackgroundColor="White"
-                        SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" IsVisible="{Binding LanguageVisible}"/>
             </Grid>
             <Grid Grid.Row="3" ColumnDefinitions="*,*">
                 <Picker Grid.Column="0" IsVisible="{Binding AgeRatingVisible}" ItemsSource="{Binding AgeRatingList}" ItemDisplayBinding="{Binding Rating}" SelectedItem="{Binding SelectedAgeRating}"/>
@@ -36,8 +33,8 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Grid x:Name="Item" Padding="20,20,20,20" RowDefinitions="Auto,70">
-                                    <Grid Grid.Row="0" ColumnDefinitions="*,190">
+                                <Grid x:Name="Item" Padding="20,20,20,20" RowDefinitions="Auto,62">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,2*">
                                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,130" Padding="5,0,5,0" Grid.Column="1">
                                             <Label Text="Title" Grid.Row="0"  HorizontalOptions="Start" FontSize="20" TextColor="LightBlue"/>
                                             <Label Text="{Binding Title}" TextColor="FloralWhite" Grid.Row="1"/>
