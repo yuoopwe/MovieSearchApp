@@ -101,11 +101,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private async Task GetTrailerExecute(object items)
         {
             MovieDetailsModel item2 = items as MovieDetailsModel;
-            for(int i=0; i < 20; i++)
+            for(int i=0; i < 21; i++)
             {
-                if(RecommendationResult.Similar.Results[i].Name == item2.Title)
+                if(RecommendationResult.Similar.Results[i].Name.ToLower() == item2.Title.ToLower())
                 {
                     await _pageService.PushPageAsync<TrailerPage, TrailerPageVm>((vm) => vm.Init(RecommendationResult.Similar.Results[i], item2));
+                    break;
+                }
+                
+                if(i == 21)
+                {
+                    await _alertService.DisplayAlertAsync("Trailer", "Trailer Not Found", "Ok");
                     break;
                 }
             }

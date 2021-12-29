@@ -5,7 +5,7 @@
     <ContentPage.Content>
         <StackLayout Padding="5,0,5,0">
             <Label HorizontalTextAlignment="Center"  Text="Select Genre(s)"/>
-            <ListView ItemsSource="{Binding CheckboxList}">
+            <ListView ItemsSource="{Binding CheckboxList}" RowHeight="60">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
