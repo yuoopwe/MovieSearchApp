@@ -101,6 +101,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand UserSearchCommand { get; }
 
         public ICommand AddFriendCommand { get; }
+        public ICommand RemoveFriendCommand { get; }
+
 
         public ICommand ViewJournalCommand { get; }
         public ICommand GoToProfileCommand { get; }
@@ -119,6 +121,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             AddFriendCommand = new CommandBuilder().SetExecuteAsync(AddFriendExecute).Build();
             ViewJournalCommand = new CommandBuilder().SetExecuteAsync(ViewJournalExecute).Build();
             GoToProfileCommand = new CommandBuilder().SetExecuteAsync(GoToProfileExecute).Build();
+            RemoveFriendCommand = new CommandBuilder().SetExecuteAsync(RemoveFriendExecute).Build();
+
 
         }
 
@@ -259,13 +263,43 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             // FriendsObjectList.Add(newFriend);
             await GrabStringFromDatabaseAsync(AccountDetails);
 
+            string[] words = FriendsString.Split(',');
+            foreach (var word in words)
+            {
+                if (word.Trim() == newFriend.Name)
+                {
+                    await _alertService.DisplayAlertAsync("Error", "This person is already part of your friends list", "Ok");
+                    goto end;
+                }
+            }
             if (FriendsString == "")
                 FriendsString = $"{newFriend.Name},";
             else
                 FriendsString = $"{FriendsString} {newFriend.Name},";
 
             var secrets = await _keyVaultService.GetKeysAsync();
-         // SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            string connectionString = secrets.ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            //Check account is made
+            connection.Open();
+            command.Connection = connection;
+            command.CommandText = $"UPDATE [dbo].[LoginTable] Set FriendsListString = '{FriendsString}' Where id = '{AccountDetails.Id}'; ";
+            command.ExecuteReader();
+            await _alertService.DisplayAlertAsync("Success", $"{newFriend.Name} is added to your friends list", "Ok");
+            connection.Close();
+
+            await GrabStringFromDatabaseAsync(DisplayAccountDetails);
+        end:;
+        }
+        public async Task RemoveFriendExecute(object item1)
+        {
+            FriendsDetailsModel newFriend = item1 as FriendsDetailsModel;
+            // FriendsObjectList.Add(newFriend);
+            await GrabStringFromDatabaseAsync(AccountDetails);
+            FriendsString = FriendsString.Replace($"{newFriend.Name},", "");
+
+            var secrets = await _keyVaultService.GetKeysAsync();
             SqlCommand command = new SqlCommand();
             string connectionString = secrets.ConnectionString;
             SqlConnection connection = new SqlConnection(connectionString);
@@ -275,13 +309,17 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             command.CommandText = $"UPDATE [dbo].[LoginTable] Set FriendsListString = '{FriendsString}' Where id = '{AccountDetails.Id}'; ";
             command.ExecuteReader();
             connection.Close();
+            await _alertService.DisplayAlertAsync("Success", $"{newFriend.Name} was successfully removed from your friends list", "Ok");
 
             await GrabStringFromDatabaseAsync(DisplayAccountDetails);
+            await _pageService.PopToRootAsync();
+            await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>(async (vm) => await vm.InitAsync(AccountDetails, JournalDetailsList));
+        end:;
         }
 
         public async Task ViewJournalExecute()
         {
-            await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList, DisplayAccountDetails));
+            await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.OtherUserInit(JournalDetailsList, DisplayAccountDetails));
         }
 
         //Allows you to search for another users profile

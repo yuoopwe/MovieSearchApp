@@ -26,7 +26,16 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private OmdbService _omdbService; 
         private MyFlyoutPageFlyoutVm _flyoutVm;
         private List<JournalDetailsModel> _journalDetailsList;
-
+        public bool OtherUser
+        {
+            get => _otherUser;
+            set => SetProperty(ref _otherUser, value);
+        }
+        public bool CurrentUser
+        {
+            get => _currentUser;
+            set => SetProperty(ref _currentUser, value);
+        }
 
         public ICommand DeleteItemCommand { get; }
         public ICommand EditItemCommand { get; }
@@ -34,6 +43,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand GetDetailsCommand { get; }
 
         private MovieDetailsModel _detailsresult;
+        private bool _otherUser;
+        private bool _currentUser;
+
         public MovieDetailsModel DetailsResult
         {
             get => _detailsresult;
@@ -107,11 +119,21 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public void Init(List<JournalDetailsModel> journalList, AccountDetailsModel accountDetails)
         {
+            CurrentUser = true;
+            OtherUser = false;
             JournalDetailsList = journalList;
             AccountDetails = accountDetails;
 
         }
 
+        public void OtherUserInit(List<JournalDetailsModel> journalList, AccountDetailsModel accountDetails)
+        {
+            CurrentUser = false;
+            OtherUser = true;
+            JournalDetailsList = journalList;
+            AccountDetails = accountDetails;
+
+        }
 
     }
 }
