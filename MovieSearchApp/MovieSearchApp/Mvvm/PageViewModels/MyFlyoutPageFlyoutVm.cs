@@ -84,6 +84,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
+            ((FlyoutPage)App.Current.MainPage).IsPresented = false;
         }
 
         public async Task ProfilePageExecute()
@@ -96,6 +97,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 await _pageService.PopToRootAsync();
                 await _pageService.PushPageAsync<ProfilePage, ProfilePageVm>(async(vm) => await vm.InitAsync(AccountDetails, JournalDetailsList));
+                ((FlyoutPage)App.Current.MainPage).IsPresented = false;
             }
             
         }
@@ -103,11 +105,13 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) =>  vm.Init(AccountDetails, JournalDetailsList) );
+            ((FlyoutPage)App.Current.MainPage).IsPresented = false;
         }
         public async Task SettingsPageExecute()
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SettingsPage, SettingsPageVm>((vm) => { });
+            ((FlyoutPage)App.Current.MainPage).IsPresented = false;
         }
         public async Task JournalPageExecute()
         {
@@ -119,6 +123,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 await _pageService.PopToRootAsync();
                 await _pageService.PushPageAsync<JournalPage, JournalPageVm>((vm) => vm.Init(JournalDetailsList, AccountDetails));
+                ((FlyoutPage)App.Current.MainPage).IsPresented = false;
             }
            
         }
@@ -127,6 +132,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<LoginPage, LoginPageVm>((vm) => { });
+            ((FlyoutPage)App.Current.MainPage).IsPresented = false;
+
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
