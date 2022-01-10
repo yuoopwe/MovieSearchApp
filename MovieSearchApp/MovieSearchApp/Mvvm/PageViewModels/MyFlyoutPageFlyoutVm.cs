@@ -22,6 +22,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class MyFlyoutPageFlyoutVm : MvvmZeroBaseVm
     {
+        private readonly KeyVaultService _keyVaultService;
         public OmdbService _omdbService;
         public IPageServiceZero _pageService;
         public IAlertService _alertService;
@@ -49,8 +50,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
 
         public ObservableCollection<FlyoutMenuModel> MenuItems { get; set; }
-        public MyFlyoutPageFlyoutVm(OmdbService omdbService, IPageServiceZero pageService, IAlertService alertService)
+        public MyFlyoutPageFlyoutVm(OmdbService omdbService, IPageServiceZero pageService, IAlertService alertService, KeyVaultService keyVaultService)
         {
+            _keyVaultService = keyVaultService;
             _omdbService = omdbService;
             _pageService = pageService;
             _alertService = alertService;
@@ -78,10 +80,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
                 });
 
+            _keyVaultService.GetKeysAsync();
+
         }
 
         public async Task SearchPageExecute()
         {
+            string path = @"C:\Users\con16\Desktop\Tom appo\LeagueOfLegendsApp\LeagueOfLegendsApp\Jsons\Champions.json";
+            System.IO.File.OpenRead(path);
+            string jsonString = System.IO.File.ReadAllText(path);
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
             ((FlyoutPage)App.Current.MainPage).IsPresented = false;
