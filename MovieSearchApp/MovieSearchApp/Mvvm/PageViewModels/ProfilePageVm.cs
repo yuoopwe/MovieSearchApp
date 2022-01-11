@@ -427,30 +427,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
             List<string> friendsTempString = new List<string>();
             friendsTempString = FriendsString.Split(',').ToList();
-            foreach (var item in friendsTempString)
-            {
-                FriendsDetailsModel newFriend = new FriendsDetailsModel();
-                var secrets = await _keyVaultService.GetKeysAsync();
-                SqlDataReader reader;
-                SqlCommand command = new SqlCommand();
-                SqlCommand readJournalCommand = new SqlCommand();
-                string connectionString = secrets.ConnectionString;
-                SqlConnection connection = new SqlConnection(connectionString);
-                connection.Open();
-                command.Connection = connection;
-                command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{item}'";
-                reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                   
-                     newFriend.Id = reader["id"].ToString();
-                     newFriend.Name = reader["profile_name"].ToString().Trim();
-                     reader.Close();
-                    
-                }
-                FriendsObjectList.Add(newFriend);
-            }
-
+            GenerateFriendsList(friendsTempString);
             FriendsObjectList.RemoveAt(FriendsObjectList.Count - 1); 
 
             FriendsCount = FriendsObjectList.Count;
@@ -474,6 +451,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
             }
             TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
+            
 
         }
         public async Task OtherUserInitAsync(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalDetails)
@@ -492,29 +470,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
             List<string> friendsTempString = new List<string>();
             friendsTempString = FriendsString.Split(',').ToList();
-            foreach (var item in friendsTempString)
-            {
-                FriendsDetailsModel newFriend = new FriendsDetailsModel();
-                var secrets = await _keyVaultService.GetKeysAsync();
-                SqlDataReader reader;
-                SqlCommand command = new SqlCommand();
-                SqlCommand readJournalCommand = new SqlCommand();
-                string connectionString = secrets.ConnectionString;
-                SqlConnection connection = new SqlConnection(connectionString);
-                connection.Open();
-                command.Connection = connection;
-                command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{item}'";
-                reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    
-                      newFriend.Id = reader["id"].ToString();
-                      newFriend.Name = reader["profile_name"].ToString().Trim();
-                      reader.Close();
-              
-                }
-                FriendsObjectList.Add(newFriend);
-            }
+            GenerateFriendsList(friendsTempString);
 
 
             FriendsCount = FriendsObjectList.Count;
@@ -560,6 +516,34 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             }
             TotalTimeWatched = $"Time Watched: {_newTotal} (mins)";
 
+        }
+
+        public async Task GenerateFriendsList(List<string> friendsTempString)
+        {
+            var secrets = await _keyVaultService.GetKeysAsync();
+            SqlDataReader reader;
+            SqlCommand command = new SqlCommand();
+            SqlCommand readJournalCommand = new SqlCommand();
+            string connectionString = secrets.ConnectionString;
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            command.Connection = connection;
+            foreach (var item in friendsTempString)
+            {
+                FriendsDetailsModel newFriend = new FriendsDetailsModel();
+                command.CommandText = $"Select * from dbo.LoginTable WHERE id = '{item}'";
+                reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+
+                    newFriend.Id = reader["id"].ToString();
+                    newFriend.Name = reader["profile_name"].ToString().Trim();
+                    reader.Close();
+
+                }
+                FriendsObjectList.Add(newFriend);
+            }
+            connection.Close();
         }
 
     }
