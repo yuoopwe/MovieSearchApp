@@ -32,15 +32,9 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<IPageServiceZero>(
 				() =>
 				{
-					// This is how we create an instance of PageServiceZero.
-					// The PageService needs to know how to get the current NavigationPage it is to interact with.
-					// (If you have a FlyoutPage at the root, the navigationGetter should return the current Detail item)
-					// It also needs to know how to get Page and ViewModel instances so we provide it with a factory
-					// that uses the IoC container. We could easily provide any sort of factory, we don't need to use an IoC container.
 					var pageService = new PageServiceZero(() => ((FlyoutPage)App.Current.MainPage).Detail.Navigation, (theType) => _IoCC.GetInstance(theType));
 					return pageService;                   //() => App.Current.MainPage.Navigation   
 				},
-				// One only ever will be created.
 				Lifestyle.Singleton
 			);
 
@@ -51,6 +45,16 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<RecommendationPage>(Lifestyle.Singleton);
 			_IoCC.Register<PopularPage>(Lifestyle.Singleton);
 			_IoCC.Register<GenreCheckbox>(Lifestyle.Singleton);
+			_IoCC.Register<TrailerPage>(Lifestyle.Singleton);
+			_IoCC.Register<LoginPage>(Lifestyle.Singleton);
+			_IoCC.Register<ProfilePage>(Lifestyle.Singleton);
+			_IoCC.Register<JournalPage>(Lifestyle.Singleton);
+			_IoCC.Register<SettingsPage>(Lifestyle.Singleton);
+			_IoCC.Register<AddToListPage>(Lifestyle.Singleton);
+			_IoCC.Register<EditJournalItemPage>(Lifestyle.Singleton);
+
+
+
 
 
 
@@ -61,6 +65,18 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<RecommendationPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<PopularPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<GenreCheckboxVm>(Lifestyle.Singleton);
+			_IoCC.Register<TrailerPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<LoginPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<ProfilePageVm>(Lifestyle.Singleton);
+			_IoCC.Register<JournalPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<SettingsPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<AddToListPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<EditJournalItemPageVm>(Lifestyle.Singleton);
+
+
+
+
+
 
 
 			// Tell the IoC container about our Services!!!.
@@ -69,25 +85,9 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<IAlertService>(GetAlertService, Lifestyle.Singleton);
 			_IoCC.Register<TastediveService>(GetTastediveService, Lifestyle.Singleton);
 			_IoCC.Register<ThemoviedbService>(GetTheMovieDbService, Lifestyle.Singleton);
+			_IoCC.Register<PasswordHasherService>(GetPasswordHasherService, Lifestyle.Singleton);
+			_IoCC.Register<KeyVaultService>(GetKeyVaultService, Lifestyle.Singleton);
 			
-
-
-
-			// Optionally add more to the IoC conatainer, e.g. loggers, Http comms objects etc. E.g.
-			// IoCC.Register<ILogger, MyLovelyLogger>(Lifestyle.Singleton);
-		}
-
-		private INavigation GetNavigationPage()
-		{
-			// => App.Current.MainPage.Navigation
-			var flyout = (FlyoutPage)App.Current.MainPage.Navigation;
-
-
-			var currentPage = flyout;
-
-			var navPage = (INavigation)currentPage;
-
-			return navPage;
 
 
 		}
@@ -99,16 +99,25 @@ namespace MovieSearchApp.Boilerplate
 
         private OmdbService GetOmdbService()
 		{
-			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbApiKey, ApiConstants.OmdbBaseApiUrl);
+			return new OmdbService(_IoCC.GetInstance<IRestService>(), ApiConstants.OmdbBaseApiUrl, _IoCC.GetInstance<KeyVaultService>());
 		}
 		private ThemoviedbService GetTheMovieDbService()
 		{
-			return new ThemoviedbService(_IoCC.GetInstance<IRestService>(), ApiConstants.TheMovieDbApiKey, ApiConstants.TheMovieDbBaseApiUrl);
+			return new ThemoviedbService(_IoCC.GetInstance<IRestService>(),ApiConstants.TheMovieDbBaseApiUrl, _IoCC.GetInstance<KeyVaultService>());
 		}
 		private TastediveService GetTastediveService()
 		{
-			return new TastediveService(_IoCC.GetInstance<IRestService>(), ApiConstants.TastediveApiKey, ApiConstants.TastediveBaseApiUrl);
+			return new TastediveService(_IoCC.GetInstance<IRestService>(),ApiConstants.TastediveBaseApiUrl, _IoCC.GetInstance<KeyVaultService>());
 		}
+		private PasswordHasherService GetPasswordHasherService()
+		{
+			return new PasswordHasherService(_IoCC.GetInstance<IRestService>());
+		}
+		private KeyVaultService GetKeyVaultService()
+		{
+			return new KeyVaultService(_IoCC.GetInstance<IRestService>());
+		}
+
 
 
 		private RestService GetRestService()
@@ -119,17 +128,8 @@ namespace MovieSearchApp.Boilerplate
 
 
 
-		/// <summary>
-		/// This is called once during application startup
-		/// </summary>
 		internal async Task SetFirstPage()
 		{
-			// Create and assign a top-level NavigationPage.
-			// If you use a FlyoutPage instead then its Detail item will need to be a NavigationPage
-			// and you will need to modify the 'navigationGetter' provided to the PageServiceZero instance to 
-			// something like this:
-			// () => ((FlyoutPage)App.Current.MainPage).Detail.Navigation
-
 		
 			var pageService = _IoCC.GetInstance<IPageServiceZero>();
 
@@ -139,28 +139,18 @@ namespace MovieSearchApp.Boilerplate
 
 			flyout.Flyout = flyoutPageFlyout;
 
-
-		
 			var navPage = new NavigationPage();
+
 			flyout.Detail = navPage;
+
 			App.Current.MainPage = flyout;
-
-			// App.Current.MainPage = new NavigationPage();
-
 			
-
-
 			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
 
 		}
 
-		/// <summary>
-		/// For debug purposes to let us know when a Page is assembled by the PageService
-		/// </summary>
-		/// <param name="thePage">A reference to the page that has been presented</param>
-		private void PageCreated(Page thePage)
-		{
-			Debug.WriteLine(thePage);
-		}
+
+
+
 	}
 }

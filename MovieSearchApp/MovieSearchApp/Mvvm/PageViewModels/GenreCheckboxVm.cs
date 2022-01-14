@@ -33,7 +33,9 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task DoneButtonExecute()
         {
+            await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<PopularPage, PopularPageVm>((vm) => vm.Apply(CheckboxList));
+        
         }
 
         public void init(IList<CheckboxModel> checkboxList)

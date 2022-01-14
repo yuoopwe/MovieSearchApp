@@ -1,10 +1,12 @@
 ﻿using FunctionZero.CommandZero;
 using FunctionZero.MvvmZero;
+using MovieSearchApp.Models;
 using MovieSearchApp.Models.OMDb;
 using MovieSearchApp.Models.PopularPage;
 using MovieSearchApp.Models.SearchPage;
 using MovieSearchApp.Models.Tastedive;
 using MovieSearchApp.Models.ThemovieDb;
+using MovieSearchApp.Models.UserAccount;
 using MovieSearchApp.Mvvm.Pages;
 using MovieSearchApp.Mvvm.Pages.PopularPage;
 using MovieSearchApp.Mvvm.Pages.PopularPageFolder;
@@ -22,6 +24,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 {
     class PopularPageVm : MvvmZeroBaseVm
     {
+        public AccountDetailsModel AccountDetails { get; set; }
+        public List<JournalDetailsModel> JournalDetailsList { get; set; }
+
+
         private TastediveService _tastediveService;
         private OmdbService _omdbService;
         private ThemoviedbService _themoviedbService;
@@ -49,7 +55,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         private LanguageModel _selectedLanguage;
         private MovieDetailsModel _display;
         private IList<CheckboxModel> _checkboxList;
-        private ObservableCollection<MovieDetailsModel> _scoresDetailsList;
+        private ObservableCollection<MovieDetailsModel> _movieObjectList;
 
         private string genreListFormatted { get; set; }
         public List<string> genresList { get; set; }
@@ -65,6 +71,8 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         public ICommand SearchPreviousPageCommand { get; }
         public ICommand GetDetailsCommand { get; }
         public ICommand GetRecommendationsCommand { get; }
+        public ICommand AddToListCommand { get; }
+
 
         public IList<CheckboxModel> CheckboxList
         {
@@ -111,10 +119,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             set => SetProperty(ref _pagecounter, value);
         }
 
-        public ObservableCollection<MovieDetailsModel> ScoresDetailsList
+        public ObservableCollection<MovieDetailsModel> MovieObjectList
         {
-            get => _scoresDetailsList;
-            set => SetProperty(ref _scoresDetailsList, value);
+            get => _movieObjectList;
+            set => SetProperty(ref _movieObjectList, value);
         }
         public MovieDetailsModel DetailsResult { get; set; }
         public ThemovieDbModel Result
@@ -169,7 +177,6 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 new AgeRatingModel {Rating = "PG-13"},
                 new AgeRatingModel {Rating = "R"},
                 new AgeRatingModel {Rating = "NC-17"},
-
             });
             CheckboxList = new List<CheckboxModel>(new[]
             {
@@ -194,13 +201,19 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                     new CheckboxModel {id = 37, Filter = "Western", IsChecked = false},
                 });
             genresList = new List<string>();
-            ScoresDetailsList = new ObservableCollection<MovieDetailsModel>();
+            MovieObjectList = new ObservableCollection<MovieDetailsModel>();
             SearchText = "";
             Apply(CheckboxList);
             LanguageVisible = false;
             AgeRatingVisible = false;
             SelectedCheckbox = CheckboxList[0];
             currentlySelectedCheckbox = SelectedCheckbox;
+
+            AccountDetails = new AccountDetailsModel();
+            JournalDetailsList = new List<JournalDetailsModel>();
+            AccountDetails.IsLoggedIn = false;
+
+            AddToListCommand = new CommandBuilder().SetExecuteAsync(AddToListExecute).Build();
             GetRecommendationsCommand = new CommandBuilder().SetExecuteAsync(GetRecommendationsExecute).Build();
             GenreCheckboxPageCommand = new CommandBuilder().SetExecuteAsync(GenreCheckboxPageExecute).Build();
             GetPopularMoviesCommand = new CommandBuilder().SetExecuteAsync(GetPopularMoviesExecute).Build();
@@ -211,41 +224,62 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         }
 
-        private async Task GetRecommendationsExecute()
+
+        public async Task AddToListExecute(object item1)
         {
-            if (Display == null)
+            bool filmIsInList = false;
+            if (AccountDetails.IsLoggedIn == true)
             {
-                await _alertService.DisplayAlertAsync("Message", "Please Select A Movie First", "Ok");
+                MovieDetailsModel item2 = item1 as MovieDetailsModel;
+                foreach (var item in JournalDetailsList)
+                {
+                    if (item.MovieTitle == item2.Title)
+                    {
+                        filmIsInList = true;
+                    }
+                }
+                if (filmIsInList == true)
+                {
+                    await _alertService.DisplayAlertAsync("Message", "You have already added this film to your list", "Ok");
+
+                }
+                else
+                {
+                    await _pageService.PushPageAsync<AddToListPage, AddToListPageVm>((vm) => vm.Init(item2, JournalDetailsList, AccountDetails, "Popular"));
+                }
             }
             else
             {
-                RecommendationModel recommendationResult;
-                string recommendationSearch = Display.Title;
-                for (recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
-                {
-                    if (recommendationSearch == "")
-                    {
-                        await _alertService.DisplayAlertAsync("Message", "No Recommendations Found", "Ok");
-                        break;
-                    }
-                    recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch);
-                }
-                await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>((vm) => vm.Init(recommendationResult));
+                await _alertService.DisplayAlertAsync("Message", "You must login to access this feature", "Ok");
+
             }
+        }
+        private async Task GetRecommendationsExecute(object item1)
+        {
+            MovieDetailsModel item2 = item1 as MovieDetailsModel;
+            
+            RecommendationModel recommendationResult;
+            string recommendationSearch = item2.Title;
+            for (recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch); recommendationResult.Similar.Results.Count <= 0; recommendationSearch = RemoveLastWord(recommendationSearch))
+            {
+                if (recommendationSearch == "")
+                {
+                    await _alertService.DisplayAlertAsync("Message", "No Recommendations Found", "Ok");
+                    break;
+                }
+                recommendationResult = await _tastediveService.GetRecommendationsMovie(recommendationSearch);
+            }
+            await _pageService.PushPageAsync<RecommendationPage, RecommendationPageVm>(async (vm) => await vm.Init(recommendationResult, AccountDetails, JournalDetailsList));
+
 
 
         }
 
-        private async Task GetMovieDetailsExecute()
+        private async Task GetMovieDetailsExecute(object item1)
         {
-            if (Display == null)
-            {
-                await _alertService.DisplayAlertAsync("Message", "Please Select A Movie First", "Ok");
-            }else
-            {      
-                await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(Display));
-            }
+            MovieDetailsModel item2 = item1 as MovieDetailsModel;
 
+            await _pageService.PushPageAsync<MovieDetailsPage, MovieDetailsPageVM>((vm) => vm.Init(item2));
 
         }
 
@@ -266,8 +300,10 @@ namespace MovieSearchApp.Mvvm.PageViewModels
                 await MovieSearch(genreListFormatted);
                 if (Result.results.Count == 0)
                 {
-                    await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
                     pageCounter--;
+                    await _alertService.DisplayAlertAsync("Message", "No More Results Found", "Ok");
+                    await MovieSearch(genreListFormatted);
+                    
 
                 }
             }
@@ -332,7 +368,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         private async Task MovieSearch(string genreListFormatted)
         {
-            ScoresDetailsList.Clear();
+            MovieObjectList.Clear();
             if (LanguageVisible == true && AgeRatingVisible == true)
             {
                 ThemovieDbModel result = await _themoviedbService.DiscoverMovies(SearchText, pageCounter, genreListFormatted, SelectedLanguage.LanguageCode, SelectedAgeRating.Rating);
@@ -373,7 +409,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             {
                 TheMovieDbDetailsModel detailResult = await _themoviedbService.DiscoverMoviesID(item.id.ToString());
                 MovieDetailsModel result2 = await _omdbService.GetMovieDetailsWithIdAsync(detailResult.imdb_id);
-                ScoresDetailsList.Add(result2);
+                MovieObjectList.Add(result2);
 
             }
 
@@ -382,7 +418,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
         {
             for(int i=0; i < Result.results.Count; i++)
             {
-                Result.results[i].poster_path = Result.results[i].poster_path.Insert(0, "https://image.tmdb.org/t/p/w400");
+                if (Result.results[i].poster_path == null)
+                {
+
+                }
+                else
+                {
+                    Result.results[i].poster_path = Result.results[i].poster_path.Insert(0, "https://image.tmdb.org/t/p/w400");
+                }
+                
             }
         }
         public string Apply(IList<CheckboxModel> checkboxList)
@@ -413,6 +457,15 @@ namespace MovieSearchApp.Mvvm.PageViewModels
             GenreCheckboxText = sb.ToString() == "" ? GenreCheckboxText = "Genre: All " : sb.ToString();
             GenreCheckboxText = GenreCheckboxText.Remove(GenreCheckboxText.Length - 1); 
             return genreListFormatted;
+        }
+        public void Init(AccountDetailsModel accountDetails, List<JournalDetailsModel> journalList)
+        {
+            if (accountDetails.IsLoggedIn == true)
+            {
+                AccountDetails = accountDetails;
+                JournalDetailsList = journalList;
+            }
+
         }
     }
 

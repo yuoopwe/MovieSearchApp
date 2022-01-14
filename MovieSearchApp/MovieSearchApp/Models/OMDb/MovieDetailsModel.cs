@@ -60,5 +60,7 @@ namespace MovieSearchApp.Models.OMDb
         public string Production { get; set; }
         public string Website { get; set; }
         public string Response { get; set; }
+
+        //public string ListNumber {get ; set ;} ListNumber = "0" "1" ... "19"
     }
 }

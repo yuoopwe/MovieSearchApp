@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.TrailerPage">
+    <ContentPage.Content>
+        <Grid Padding="5,0,5,0" RowDefinitions="Auto, *, Auto"  BackgroundColor="LightSlateGray" >
+            <Label Grid.Row="0" Text="Movie Trailer" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontSize="20"/>
+            <Grid Grid.Row="1" BackgroundColor="#2E333A" RowDefinitions="Auto,Auto">
+                <Label Text="{Binding Display.Name}" TextColor="White" Grid.Row="0" HorizontalOptions="Center" FontSize="20"/>
+                <WebView Grid.Row="2" Source="{Binding Display.yUrl}"
+                                             IsVisible="true"/>
+                                                        
+            </Grid>
+            <Button Grid.Row="2" Text="Get More Details" Command="{Binding GetDetailsCommand}" BackgroundColor="#2E333A" TextColor="FloralWhite"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -39,16 +39,16 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout>
-                                    <Label Text="{Binding Source}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
-                                    <Label Text="{Binding Value}" HorizontalOptions="Center" TextColor="White"/>
-                                </StackLayout>
+                                <Grid RowDefinitions="Auto,19">
+                                    <Label Text="{Binding Source}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Grid.Row="0"/>
+                                    <Label Text="{Binding Value}" HorizontalOptions="Center" TextColor="White" Grid.Row="1"/>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <Image Grid.Row="2" HeightRequest="250" Source="{Binding DetailsResult.Poster}"/>
+            <!--Image Grid.Row="2" HeightRequest="250" Source="{Binding DetailsResult.Poster}"/-->
         </Grid>
     </ContentPage.Content>
 </ContentPage>
