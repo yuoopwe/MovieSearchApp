@@ -1,4 +1,4 @@
-# MovieSearchApp
+# MovieX
 
 ## Description 
 Application for searching and recommending movies, Series and games using a number of APIs.  
