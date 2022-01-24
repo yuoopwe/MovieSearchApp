@@ -86,9 +86,7 @@ namespace MovieSearchApp.Mvvm.PageViewModels
 
         public async Task SearchPageExecute()
         {
-            string path = @"C:\Users\con16\Desktop\Tom appo\LeagueOfLegendsApp\LeagueOfLegendsApp\Jsons\Champions.json";
-            System.IO.File.OpenRead(path);
-            string jsonString = System.IO.File.ReadAllText(path);
+
             await _pageService.PopToRootAsync();
             await _pageService.PushPageAsync<SearchPage, SearchPageVm>((vm) => vm.Init(AccountDetails, JournalDetailsList));
             ((FlyoutPage)App.Current.MainPage).IsPresented = false;
