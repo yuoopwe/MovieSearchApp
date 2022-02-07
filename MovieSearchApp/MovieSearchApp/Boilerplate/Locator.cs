@@ -52,6 +52,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<SettingsPage>(Lifestyle.Singleton);
 			_IoCC.Register<AddToListPage>(Lifestyle.Singleton);
 			_IoCC.Register<EditJournalItemPage>(Lifestyle.Singleton);
+			_IoCC.Register<LandingPage>(Lifestyle.Singleton);
 
 
 
@@ -72,6 +73,7 @@ namespace MovieSearchApp.Boilerplate
 			_IoCC.Register<SettingsPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<AddToListPageVm>(Lifestyle.Singleton);
 			_IoCC.Register<EditJournalItemPageVm>(Lifestyle.Singleton);
+			_IoCC.Register<LandingPageVm>(Lifestyle.Singleton);
 
 
 
@@ -145,7 +147,7 @@ namespace MovieSearchApp.Boilerplate
 
 			App.Current.MainPage = flyout;
 			
-			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<SearchPage, SearchPageVm>((vm) => { });
+			await _IoCC.GetInstance<IPageServiceZero>().PushPageAsync<LandingPage, LandingPageVm>((vm) => { });
 
 		}
 

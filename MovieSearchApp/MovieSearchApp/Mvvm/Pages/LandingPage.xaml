@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MovieSearchApp.Mvvm.Pages.LandingPage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" BackgroundColor="LightSlateGray">
+            <Label Grid.Row="1" Grid.Column="1" Text="Welcome To The Home Page! Please Select A Page From The Flyout"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
